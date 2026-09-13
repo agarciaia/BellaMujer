@@ -12,8 +12,9 @@ Proyecto estático compatible con Vercel. No requiere build.
 - `manifest.json`: metadatos PWA.
 - `service-worker.js`: caché del app shell y soporte offline básico.
 - `assets/icons/`: iconos PWA/Apple.
-- `original/BellaMujer_PREVIEW_LOCAL.html`: respaldo intacto del archivo fuente recibido.
 - `supabase/README.md`: preparación de la siguiente fase.
+
+El archivo fuente original se conserva sin cambios en el paquete de respaldo de la publicación V1.
 
 ## Siguiente fase
 
