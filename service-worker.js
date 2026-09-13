@@ -4,7 +4,7 @@ const APP_SHELL = [
   './index.html',
   './manifest.json',
   './assets/icons/icon-192.png',
-  './assets/icons/icon-512.png',
+  './assets/icons/icon-512.svg',
   './assets/icons/apple-touch-icon.png'
 ];
 
