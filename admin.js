@@ -177,8 +177,8 @@ function renderShare(){
 
 async function renderProfiles(){
   const panel=adminContent.querySelector('[data-panel=profiles]');
-  const {data}=await supabaseClient.from('business_members').select('username,role,active,business_id,businesses(name,slug)').order('created_at',{ascending:false});
-  panel.innerHTML=`<form id="createProfileForm" class="admin-grid"><div class="admin-card"><h3>Crear perfil de cliente</h3><div class="field"><label>Nombre del negocio</label><input name="businessName" required></div><div class="field"><label>Usuario</label><input name="username" pattern="[a-zA-Z0-9._-]{3,30}" required></div><div class="field"><label>Contraseña</label><input name="password" type="password" minlength="6" required></div><div class="field"><label>Nombre del enlace</label><input name="slug" placeholder="se completa automáticamente"></div></div><p class="profile-message" id="profileCreateMessage"></p><button class="btn btn-wine">Crear perfil y tienda</button></form><h3 style="margin-top:22px">Perfiles creados</h3><div class="admin-list">${(data||[]).map(x=>`<div class="admin-card"><strong>${esc(x.businesses?.name||'Negocio')}</strong><div>Usuario: ${esc(x.username)}</div><small>${x.active?'Activo':'Suspendido'} · /${esc(x.businesses?.slug||'')}</small></div>`).join('')}</div>`;
+  const {data}=await supabaseClient.from('business_members').select('user_id,username,role,active,business_id,businesses(name,slug)').order('created_at',{ascending:false});
+  panel.innerHTML=`<form id="createProfileForm" class="admin-grid"><div class="admin-card"><h3>Crear perfil de cliente</h3><div class="field"><label>Nombre del negocio</label><input name="businessName" required></div><div class="field"><label>Usuario</label><input name="username" pattern="[a-zA-Z0-9._-]{3,30}" required></div><div class="field"><label>Contraseña</label><input name="password" type="password" minlength="6" required></div><div class="field"><label>Nombre del enlace</label><input name="slug" placeholder="se completa automáticamente"></div></div><p class="profile-message" id="profileCreateMessage"></p><button class="btn btn-wine">Crear perfil y tienda</button></form><h3 style="margin-top:22px">Perfiles creados</h3><div class="admin-list">${(data||[]).map(x=>`<div class="admin-card"><strong>${esc(x.businesses?.name||'Negocio')}</strong><div>Usuario: ${esc(x.username)}</div><small>${x.active?'Activo':'Suspendido'} · /${esc(x.businesses?.slug||'')}</small><div class="small-actions"><button onclick="manageBusiness('${x.business_id}')">Administrar tienda</button>${x.user_id!==SUPERADMIN_USER_ID?`<button onclick="toggleMember('${x.user_id}','${x.business_id}',${!x.active})">${x.active?'Suspender acceso':'Activar acceso'}</button>`:''}</div></div>`).join('')}</div>`;
   document.querySelector('#createProfileForm').onsubmit=createProfile;
   const businessName=document.querySelector('#createProfileForm [name=businessName]'),slug=document.querySelector('#createProfileForm [name=slug]');
   businessName.oninput=()=>{if(!slug.dataset.edited)slug.value=slugFrom(businessName.value)};slug.oninput=()=>slug.dataset.edited='1';
@@ -205,3 +205,18 @@ orderWhatsapp=function(){
 };
 
 window.addEventListener('load',loadStore);
+
+async function manageBusiness(id){
+  const {data,error}=await supabaseClient.from('businesses').select('*').eq('id',id).single();
+  if(error)return toast(error.message);
+  managedBusiness=data;await openAdminDashboard();
+}
+async function toggleMember(userId,businessId,active){
+  const {error}=await supabaseClient.from('business_members').update({active}).eq('user_id',userId).eq('business_id',businessId);
+  if(error)return toast(error.message);
+  toast(active?'Acceso activado':'Acceso suspendido');await renderProfiles();
+}
+const originalLogout=logoutProfile;
+logoutProfile=async function(){await originalLogout();activeUser=null;managedBusiness=null;closeModal('adminModal');await loadStore()};
+function guardedSubmit(action){return async function(event,...args){event.preventDefault();const form=event.currentTarget||event.target;if(form.dataset.busy)return;form.dataset.busy='1';const buttons=[...form.querySelectorAll('button')];buttons.forEach(b=>b.disabled=true);try{await action(event,...args)}catch(error){toast('No se pudo guardar. Revisa la conexión e intenta nuevamente.');console.error(error)}finally{delete form.dataset.busy;buttons.forEach(b=>b.disabled=false)}}}
+saveSettings=guardedSubmit(saveSettings);saveProduct=guardedSubmit(saveProduct);createProfile=guardedSubmit(createProfile);

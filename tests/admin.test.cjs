@@ -1,0 +1,18 @@
+const {JSDOM}=require(process.env.JSDOM_PATH||'jsdom'),fs=require('fs'),assert=require('node:assert/strict');
+const root=require('path').resolve(__dirname,'..')+'/';
+let html=fs.readFileSync(root+'index.html','utf8');html=html.replace('<script src="admin.js"></script>',()=>'<script>'+fs.readFileSync(root+'admin.js','utf8')+'</script>');
+const biz={id:'11111111-1111-4111-8111-111111111111',slug:'bellamujer',name:'BellaMujer',primary_color:'#772640',published:true};
+let rows=[],updated;
+const api={from(table){const q={select(){return q},eq(){return q},order(){return q},maybeSingle:async()=>({data:biz}),single:async()=>({data:biz}),update(p){updated=p;return q},then(fn){return Promise.resolve({data:table==='products'?rows:[],error:null}).then(fn)}};return q},auth:{onAuthStateChange(){},getSession:async()=>({data:{session:null}})}};
+const dom=new JSDOM(html,{url:'https://example.test/',runScripts:'dangerously',beforeParse(w){w.supabase={createClient:()=>api};w.HTMLElement.prototype.scrollIntoView=()=>{};}});
+(async()=>{const w=dom.window;await new Promise(r=>w.addEventListener('load',r));await new Promise(r=>setTimeout(r,20));
+assert.equal(w.document.querySelectorAll('#grid article').length,0,'empty db must not show sample products');
+await w.accountView({id:'253c6a3c-f4b9-4be6-95f2-0c081789bf04',email:'owner@example.test',app_metadata:{}});
+assert.match(w.document.querySelector('#profileContent').textContent,/Administrar tienda/,'panel override survives script ordering');
+await w.openAdminDashboard();assert.ok(w.document.querySelector('#settingsForm'));assert.ok(w.document.querySelector('#createProfileForm'));
+rows=[{id:'22222222-2222-4222-8222-222222222222',name:'<img src=x onerror=alert(1)>',category:'Ropa " especial',price:300,sizes:['Única'],colors:['<script>x</script>'],description:'<script>bad</script>',active:true}];
+await w.loadStore();assert.equal(w.document.querySelectorAll('#grid article').length,1);assert.equal(w.document.querySelectorAll('#grid [onerror]').length,0);
+w.document.querySelector('#grid .quick').click();assert.match(w.document.querySelector('#productDetail').textContent,/<img src=x/);assert.equal(w.document.querySelectorAll('#productDetail script').length,0);
+w.addCart();w.renderCart();assert.equal(w.document.querySelectorAll('#cartList [onerror]').length,0);assert.match(w.localStorage.getItem('bm_cart_bellamujer'),/22222222/);
+rows=[];await w.loadStore();assert.equal(w.document.querySelectorAll('#grid article').length,0);
+console.log('PASS: script order, panel/settings/profiles, empty catalog, UUID actions, escaped product/detail/cart, tenant cart storage, removal');dom.window.close();})().catch(e=>{console.error(e);process.exitCode=1;dom.window.close()});
