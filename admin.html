@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#7b2944">
+<title>BellaMujer — Administrador</title>
+<style>
+:root{--wine:#772640;--wine2:#9e4763;--bg:#fff8fa;--ink:#25171d;--muted:#76656c;--line:#eadce1;--green:#159957}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{max-width:1100px;margin:auto;padding:16px 16px 80px}.top{position:sticky;top:0;z-index:10;background:rgba(255,248,250,.94);backdrop-filter:blur(12px);display:flex;justify-content:space-between;align-items:center;padding:14px 0}.brand{font-family:Georgia,serif;color:var(--wine);font-size:1.55rem;font-weight:800}.pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 12px}.card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:16px;box-shadow:0 10px 28px rgba(80,30,48,.06);margin-bottom:14px}.grid{display:grid;gap:12px}.grid2{grid-template-columns:1fr}.stat{padding:14px;border:1px solid var(--line);border-radius:18px;background:#fff}.stat b{display:block;font-size:1.6rem;color:var(--wine)}h1,h2,h3{font-family:Georgia,serif}.tabs{display:flex;gap:8px;overflow:auto;padding-bottom:8px}.tab{white-space:nowrap;border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 14px;font-weight:800;color:var(--wine)}.tab.active{background:var(--wine);color:#fff}.panel{display:none}.panel.active{display:block}label{display:block;font-size:.78rem;font-weight:800;margin-bottom:5px;color:var(--muted)}input,textarea,select{width:100%;border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff;font:inherit}textarea{min-height:92px;resize:vertical}.formgrid{display:grid;gap:10px}.btn{border:0;border-radius:14px;padding:12px 14px;font-weight:900}.btn-primary{background:var(--wine);color:#fff}.btn-green{background:var(--green);color:#fff}.btn-light{background:#f7edf1;color:var(--wine)}.btn-danger{background:#fff1f1;color:#a12626}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.list{display:grid;gap:10px}.item{border:1px solid var(--line);border-radius:16px;padding:12px;background:#fff;display:grid;gap:10px}.item-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.muted{color:var(--muted);font-size:.84rem}.thumbs{display:flex;gap:8px;overflow:auto}.thumb{width:72px;height:88px;object-fit:cover;border-radius:12px;border:1px solid var(--line)}.hidden{display:none!important}.login{max-width:420px;margin:10vh auto 0}.error{color:#a12626;font-size:.85rem}.ok{color:var(--green);font-size:.85rem}.empty{text-align:center;padding:28px;color:var(--muted)}@media(min-width:760px){.grid2{grid-template-columns:repeat(4,1fr)}.formgrid{grid-template-columns:repeat(2,1fr)}.span2{grid-column:1/-1}.item{grid-template-columns:1fr auto;align-items:center}}
+</style>
+<script src="js/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div class="brand">BellaMujer · Admin</div><button id="logoutBtn" class="pill hidden">Cerrar sesión</button></div>
+  <section id="loginView" class="login card">
+    <h1>Acceso administrador</h1>
+    <p class="muted">Usa el usuario administrador creado en Supabase Auth.</p>
+    <div class="formgrid">
+      <div class="span2"><label>Email</label><input id="email" type="email" autocomplete="username"></div>
+      <div class="span2"><label>Contraseña</label><input id="password" type="password" autocomplete="current-password"></div>
+      <div class="span2"><button id="loginBtn" class="btn btn-primary" style="width:100%">Ingresar</button></div>
+      <div id="loginMsg" class="span2"></div>
+    </div>
+  </section>
+
+  <main id="appView" class="hidden">
+    <div class="grid grid2">
+      <div class="stat"><span>Productos</span><b id="statProducts">0</b></div>
+      <div class="stat"><span>Servicios</span><b id="statServices">0</b></div>
+      <div class="stat"><span>Pedidos nuevos</span><b id="statOrders">0</b></div>
+      <div class="stat"><span>Promociones</span><b id="statPromos">0</b></div>
+    </div>
+
+    <div class="card"><div class="tabs">
+      <button class="tab active" data-panel="productsPanel">Productos</button>
+      <button class="tab" data-panel="servicesPanel">Servicios</button>
+      <button class="tab" data-panel="ordersPanel">Pedidos</button>
+      <button class="tab" data-panel="settingsPanel">Configuración</button>
+    </div></div>
+
+    <section id="productsPanel" class="panel active">
+      <div class="card">
+        <div class="item-head"><div><h2 id="productFormTitle">Nuevo producto</h2><p class="muted">Nombre, precio, categoría, tallas, colores, stock e imágenes.</p></div><button id="resetProductBtn" class="btn btn-light">Limpiar</button></div>
+        <div class="formgrid">
+          <input id="productId" type="hidden">
+          <div><label>Nombre</label><input id="productName"></div>
+          <div><label>Categoría</label><select id="productCategory"></select></div>
+          <div><label>Precio</label><input id="productPrice" type="number" min="0"></div>
+          <div><label>Precio anterior / oferta</label><input id="productCompare" type="number" min="0"></div>
+          <div class="span2"><label>Descripción</label><textarea id="productDescription"></textarea></div>
+          <div><label>Tallas (separadas por coma)</label><input id="productSizes" placeholder="S,M,L,XL"></div>
+          <div><label>Colores (separados por coma)</label><input id="productColors" placeholder="Negro,Burdeo,Beige"></div>
+          <div><label>Stock por combinación</label><input id="productStock" type="number" min="0" value="1"></div>
+          <div><label>Orden</label><input id="productOrder" type="number" value="0"></div>
+          <div><label><input id="productFeatured" type="checkbox" style="width:auto"> Destacado</label></div>
+          <div><label><input id="productActive" type="checkbox" checked style="width:auto"> Activo</label></div>
+          <div class="span2"><label>Imágenes</label><input id="productImages" type="file" accept="image/*" multiple></div>
+          <div class="span2 row"><button id="saveProductBtn" class="btn btn-primary">Guardar producto</button><span id="productMsg"></span></div>
+        </div>
+      </div>
+      <div class="card"><h2>Productos cargados</h2><div id="productsList" class="list"></div></div>
+    </section>
+
+    <section id="servicesPanel" class="panel">
+      <div class="card"><h2>Nuevo servicio</h2><div class="formgrid">
+        <input id="serviceId" type="hidden">
+        <div><label>Nombre</label><input id="serviceName"></div>
+        <div><label>Precio opcional</label><input id="servicePrice" type="number" min="0"></div>
+        <div class="span2"><label>Descripción</label><textarea id="serviceDescription"></textarea></div>
+        <div><label>Orden</label><input id="serviceOrder" type="number" value="0"></div>
+        <div><label><input id="serviceActive" type="checkbox" checked style="width:auto"> Activo</label></div>
+        <div class="span2"><label>Imagen</label><input id="serviceImage" type="file" accept="image/*"></div>
+        <div class="span2 row"><button id="saveServiceBtn" class="btn btn-primary">Guardar servicio</button><span id="serviceMsg"></span></div>
+      </div></div>
+      <div class="card"><h2>Servicios</h2><div id="servicesList" class="list"></div></div>
+    </section>
+
+    <section id="ordersPanel" class="panel"><div class="card"><h2>Pedidos</h2><div id="ordersList" class="list"></div></div></section>
+
+    <section id="settingsPanel" class="panel"><div class="card"><h2>Configuración de tienda</h2><div class="formgrid">
+      <div><label>Nombre tienda</label><input id="storeName"></div>
+      <div><label>WhatsApp</label><input id="storeWhatsapp" placeholder="56912345678"></div>
+      <div class="span2"><label>Título portada</label><input id="storeHeroTitle"></div>
+      <div class="span2"><label>Texto portada</label><textarea id="storeHeroText"></textarea></div>
+      <div><label>Instagram</label><input id="storeInstagram"></div>
+      <div><label>TikTok</label><input id="storeTiktok"></div>
+      <div><label>Facebook</label><input id="storeFacebook"></div>
+      <div><label>Texto despacho</label><input id="storeDispatch"></div>
+      <div class="span2 row"><button id="saveSettingsBtn" class="btn btn-primary">Guardar configuración</button><span id="settingsMsg"></span></div>
+    </div></div></section>
+  </main>
+</div>
+<script>
+const cfg=window.BELLA_CONFIG||{};
+const configured=!!(cfg.SUPABASE_URL&&cfg.SUPABASE_PUBLISHABLE_KEY);
+const sb=configured?window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_PUBLISHABLE_KEY):null;
+const $=id=>document.getElementById(id);
+const slugify=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const msg=(el,text,ok=true)=>{el.textContent=text;el.className=ok?'ok':'error'};
+let categories=[];
+
+async function ensureAdmin(){
+  if(!configured){msg($('loginMsg'),'Falta configurar Supabase en js/config.js.',false);return false}
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session)return false;
+  const {data,error}=await sb.from('admin_users').select('user_id').eq('user_id',session.user.id).maybeSingle();
+  if(error||!data){await sb.auth.signOut();msg($('loginMsg'),'Este usuario no tiene permiso de administrador.',false);return false}
+  return true;
+}
+async function boot(){
+  if(await ensureAdmin()){showApp();await refreshAll()}else{$('loginView').classList.remove('hidden')}
+}
+function showApp(){$('loginView').classList.add('hidden');$('appView').classList.remove('hidden');$('logoutBtn').classList.remove('hidden')}
+$('loginBtn').onclick=async()=>{
+  if(!configured)return msg($('loginMsg'),'Falta configurar Supabase en js/config.js.',false);
+  msg($('loginMsg'),'Ingresando...');
+  const {error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});
+  if(error)return msg($('loginMsg'),error.message,false);
+  if(await ensureAdmin()){showApp();await refreshAll()}
+};
+$('logoutBtn').onclick=async()=>{await sb.auth.signOut();location.reload()};
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.panel).classList.add('active')});
+
+async function refreshAll(){await Promise.all([loadCategories(),loadProducts(),loadServices(),loadOrders(),loadSettings()])}
+async function loadCategories(){const {data}=await sb.from('categories').select('*').order('sort_order');categories=data||[];$('productCategory').innerHTML=categories.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}
+async function loadProducts(){
+  const {data,error}=await sb.from('products').select('*,categories(name),product_images(*)').order('sort_order').order('created_at',{ascending:false});
+  if(error)return;
+  $('statProducts').textContent=data.length;
+  $('productsList').innerHTML=data.length?data.map(p=>`<div class="item"><div><div class="item-head"><div><b>${p.name}</b><div class="muted">${p.categories?.name||'Sin categoría'} · $${Number(p.price).toLocaleString('es-CL')} · ${p.active?'Activo':'Oculto'}</div></div></div><div class="thumbs">${(p.product_images||[]).sort((a,b)=>a.sort_order-b.sort_order).map(i=>`<img class="thumb" src="${cfg.SUPABASE_URL}/storage/v1/object/public/product-images/${i.storage_path}">`).join('')}</div></div><div class="row"><button class="btn btn-light" onclick="editProduct('${p.id}')">Editar</button><button class="btn btn-danger" onclick="deleteProduct('${p.id}')">Eliminar</button></div></div>`).join(''):'<div class="empty">Aún no hay productos.</div>';
+}
+async function editProduct(id){
+  const {data:p}=await sb.from('products').select('*,product_variants(*)').eq('id',id).single();if(!p)return;
+  $('productId').value=p.id;$('productName').value=p.name;$('productCategory').value=p.category_id||'';$('productPrice').value=p.price;$('productCompare').value=p.compare_at_price||'';$('productDescription').value=p.description||'';$('productOrder').value=p.sort_order||0;$('productFeatured').checked=p.featured;$('productActive').checked=p.active;
+  $('productSizes').value=[...new Set((p.product_variants||[]).map(v=>v.size).filter(Boolean))].join(',');$('productColors').value=[...new Set((p.product_variants||[]).map(v=>v.color).filter(Boolean))].join(',');$('productStock').value=(p.product_variants||[])[0]?.stock??1;$('productFormTitle').textContent='Editar producto';window.scrollTo({top:0,behavior:'smooth'});
+}
+$('resetProductBtn').onclick=()=>{['productId','productName','productPrice','productCompare','productDescription','productSizes','productColors'].forEach(id=>$(id).value='');$('productStock').value=1;$('productOrder').value=0;$('productFeatured').checked=false;$('productActive').checked=true;$('productImages').value='';$('productFormTitle').textContent='Nuevo producto'};
+async function uploadFiles(productId,files){
+  let order=0;for(const file of files){const ext=file.name.split('.').pop().toLowerCase();const path=`products/${productId}/${crypto.randomUUID()}.${ext}`;const {error}=await sb.storage.from('product-images').upload(path,file,{upsert:false});if(error)throw error;await sb.from('product_images').insert({product_id:productId,storage_path:path,is_primary:order===0,sort_order:order++})}
+}
+$('saveProductBtn').onclick=async()=>{
+  try{
+    msg($('productMsg'),'Guardando...');const id=$('productId').value;const payload={name:$('productName').value.trim(),slug:slugify($('productName').value),description:$('productDescription').value.trim(),category_id:$('productCategory').value||null,price:Number($('productPrice').value||0),compare_at_price:$('productCompare').value?Number($('productCompare').value):null,featured:$('productFeatured').checked,active:$('productActive').checked,sort_order:Number($('productOrder').value||0),updated_at:new Date().toISOString()};
+    let productId=id;if(id){const {error}=await sb.from('products').update(payload).eq('id',id);if(error)throw error;await sb.from('product_variants').delete().eq('product_id',id)}else{const {data,error}=await sb.from('products').insert(payload).select('id').single();if(error)throw error;productId=data.id}
+    const sizes=$('productSizes').value.split(',').map(x=>x.trim()).filter(Boolean);const colors=$('productColors').value.split(',').map(x=>x.trim()).filter(Boolean);const stock=Number($('productStock').value||0);const variants=[];(sizes.length?sizes:[null]).forEach(s=>(colors.length?colors:[null]).forEach(c=>variants.push({product_id:productId,size:s,color:c,stock,active:true})));if(variants.length){const {error}=await sb.from('product_variants').insert(variants);if(error)throw error}
+    if($('productImages').files.length)await uploadFiles(productId,[...$('productImages').files]);msg($('productMsg'),'Producto guardado.');$('resetProductBtn').click();await loadProducts();
+  }catch(e){msg($('productMsg'),e.message||String(e),false)}
+};
+async function deleteProduct(id){if(!confirm('¿Eliminar este producto?'))return;const {data:imgs}=await sb.from('product_images').select('storage_path').eq('product_id',id);if(imgs?.length)await sb.storage.from('product-images').remove(imgs.map(x=>x.storage_path));await sb.from('products').delete().eq('id',id);await loadProducts()}
+
+async function loadServices(){const {data}=await sb.from('services').select('*').order('sort_order');const rows=data||[];$('statServices').textContent=rows.length;$('servicesList').innerHTML=rows.length?rows.map(s=>`<div class="item"><div><b>${s.name}</b><div class="muted">${s.price==null?'Consultar':('$'+Number(s.price).toLocaleString('es-CL'))} · ${s.active?'Activo':'Oculto'}</div></div><div class="row"><button class="btn btn-light" onclick="editService('${s.id}')">Editar</button><button class="btn btn-danger" onclick="deleteService('${s.id}')">Eliminar</button></div></div>`).join(''):'<div class="empty">Aún no hay servicios.</div>'}
+async function editService(id){const {data:s}=await sb.from('services').select('*').eq('id',id).single();if(!s)return;$('serviceId').value=s.id;$('serviceName').value=s.name;$('servicePrice').value=s.price??'';$('serviceDescription').value=s.description||'';$('serviceOrder').value=s.sort_order||0;$('serviceActive').checked=s.active}
+$('saveServiceBtn').onclick=async()=>{try{msg($('serviceMsg'),'Guardando...');const id=$('serviceId').value;let image_path=null;if($('serviceImage').files[0]){const f=$('serviceImage').files[0],path=`services/${crypto.randomUUID()}.${f.name.split('.').pop().toLowerCase()}`;const {error}=await sb.storage.from('product-images').upload(path,f);if(error)throw error;image_path=path}const payload={name:$('serviceName').value.trim(),slug:slugify($('serviceName').value),description:$('serviceDescription').value.trim(),price:$('servicePrice').value?Number($('servicePrice').value):null,active:$('serviceActive').checked,sort_order:Number($('serviceOrder').value||0),updated_at:new Date().toISOString(),...(image_path?{image_path}:{})};const q=id?sb.from('services').update(payload).eq('id',id):sb.from('services').insert(payload);const {error}=await q;if(error)throw error;['serviceId','serviceName','servicePrice','serviceDescription'].forEach(x=>$(x).value='');$('serviceImage').value='';msg($('serviceMsg'),'Servicio guardado.');await loadServices()}catch(e){msg($('serviceMsg'),e.message||String(e),false)}};
+async function deleteService(id){if(!confirm('¿Eliminar este servicio?'))return;await sb.from('services').delete().eq('id',id);await loadServices()}
+
+async function loadOrders(){const {data}=await sb.from('orders').select('*').order('created_at',{ascending:false}).limit(100);const rows=data||[];$('statOrders').textContent=rows.filter(x=>x.status==='new').length;$('ordersList').innerHTML=rows.length?rows.map(o=>`<div class="item"><div><b>${o.customer_name||'Cliente sin nombre'}</b><div class="muted">${new Date(o.created_at).toLocaleString('es-CL')} · $${Number(o.total).toLocaleString('es-CL')} · ${o.source}</div><div class="muted">${o.customer_phone||''}</div></div><div><select onchange="setOrderStatus('${o.id}',this.value)"><option value="new" ${o.status==='new'?'selected':''}>Nuevo</option><option value="contacted" ${o.status==='contacted'?'selected':''}>Contactado</option><option value="confirmed" ${o.status==='confirmed'?'selected':''}>Confirmado</option><option value="delivered" ${o.status==='delivered'?'selected':''}>Entregado</option><option value="cancelled" ${o.status==='cancelled'?'selected':''}>Cancelado</option></select></div></div>`).join(''):'<div class="empty">Aún no hay pedidos.</div>'}
+async function setOrderStatus(id,status){await sb.from('orders').update({status,updated_at:new Date().toISOString()}).eq('id',id);await loadOrders()}
+
+async function loadSettings(){const {data:s}=await sb.from('store_settings').select('*').eq('id',1).single();if(!s)return;$('storeName').value=s.store_name||'';$('storeWhatsapp').value=s.whatsapp||'';$('storeHeroTitle').value=s.hero_title||'';$('storeHeroText').value=s.hero_text||'';$('storeInstagram').value=s.instagram||'';$('storeTiktok').value=s.tiktok||'';$('storeFacebook').value=s.facebook||'';$('storeDispatch').value=s.dispatch_text||'';const {count}=await sb.from('promotions').select('*',{count:'exact',head:true});$('statPromos').textContent=count||0}
+$('saveSettingsBtn').onclick=async()=>{const payload={store_name:$('storeName').value,whatsapp:$('storeWhatsapp').value,hero_title:$('storeHeroTitle').value,hero_text:$('storeHeroText').value,instagram:$('storeInstagram').value,tiktok:$('storeTiktok').value,facebook:$('storeFacebook').value,dispatch_text:$('storeDispatch').value,updated_at:new Date().toISOString()};const {error}=await sb.from('store_settings').update(payload).eq('id',1);msg($('settingsMsg'),error?error.message:'Configuración guardada.',!error)};
+boot();
+</script>
+</body>
+</html>
