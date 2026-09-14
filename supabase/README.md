@@ -1,9 +1,8 @@
 # Fase 2 — Supabase
 
-Este directorio queda reservado para migraciones y configuración futura. La primera versión publicada mantiene el catálogo y la lógica actual en el frontend para evitar cambios funcionales o visuales no solicitados.
+Supabase Auth ya está conectado al perfil de la PWA. La sesión se conserva en el dispositivo instalado y el usuario propietario se identifica como superadministrador.
 
-Próxima fase prevista:
-- Auth para administradores.
+Próximos módulos previstos:
 - Productos y variantes dinámicas.
 - Storage de imágenes.
 - Stock.
