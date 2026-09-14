@@ -1,0 +1,76 @@
+import { createClient } from "npm:@supabase/supabase-js@2.57.4";
+
+const SUPERADMIN_ID = "253c6a3c-f4b9-4be6-95f2-0c081789bf04";
+const cors = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Content-Type": "application/json",
+};
+
+const reply = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), { status, headers: cors });
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
+  if (req.method !== "POST") return reply({ error: "Método no permitido" }, 405);
+
+  const url = Deno.env.get("SUPABASE_URL") ?? "";
+  const secrets = JSON.parse(Deno.env.get("SUPABASE_SECRET_KEYS") ?? "{}");
+  const serviceKey = secrets.default ?? Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+  const admin = createClient(url, serviceKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+
+  const token = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
+  const { data: authData, error: authError } = await admin.auth.getUser(token);
+  if (authError || authData.user?.id !== SUPERADMIN_ID) {
+    return reply({ error: "Solo el superadministrador puede crear perfiles." }, 403);
+  }
+
+  let payload: Record<string, unknown>;
+  try { payload = await req.json(); } catch { return reply({ error: "Datos inválidos." }, 400); }
+  const businessName = String(payload.businessName ?? "").trim();
+  const username = String(payload.username ?? "").trim().toLowerCase();
+  const password = String(payload.password ?? "");
+  let slug = String(payload.slug ?? "").trim().toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 50);
+
+  if (businessName.length < 2 || !/^[a-z0-9._-]{3,30}$/.test(username) || password.length < 6) {
+    return reply({ error: "Completa nombre, usuario válido y contraseña de al menos 6 caracteres." }, 400);
+  }
+  if (slug.length < 3) slug = username.replace(/[._]/g, "-");
+  const email = `${username}@usuarios.bellamujer.invalid`;
+
+  const { data: created, error: createError } = await admin.auth.admin.createUser({
+    email, password, email_confirm: true,
+    app_metadata: { role: "business_admin" },
+    user_metadata: { username, business_name: businessName },
+  });
+  if (createError || !created.user) {
+    return reply({ error: createError?.message?.includes("already") ? "Ese usuario ya existe." : (createError?.message ?? "No se pudo crear el usuario.") }, 400);
+  }
+
+  const { data: business, error: businessError } = await admin.from("businesses")
+    .insert({ name: businessName, slug, created_by: authData.user.id })
+    .select("id,slug,name").single();
+  if (businessError || !business) {
+    await admin.auth.admin.deleteUser(created.user.id);
+    return reply({ error: businessError?.code === "23505" ? "Ese enlace ya está ocupado." : (businessError?.message ?? "No se pudo crear el negocio.") }, 400);
+  }
+
+  const { error: memberError } = await admin.from("business_members").insert({
+    business_id: business.id, user_id: created.user.id, username, role: "admin",
+  });
+  if (memberError) {
+    await admin.from("businesses").delete().eq("id", business.id);
+    await admin.auth.admin.deleteUser(created.user.id);
+    return reply({ error: memberError.message }, 400);
+  }
+
+  await admin.auth.admin.updateUserById(created.user.id, {
+    app_metadata: { role: "business_admin", business_id: business.id },
+  });
+  return reply({ business, user: { id: created.user.id, username } }, 201);
+});
