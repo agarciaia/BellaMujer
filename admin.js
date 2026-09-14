@@ -20,22 +20,26 @@ async function fetchBusiness(slug){
   return data;
 }
 
+const brandFonts={classic:'Georgia, serif',modern:'Arial, sans-serif',rounded:'Trebuchet MS, sans-serif',editorial:'Palatino Linotype, Georgia, serif'};
+const colorValue=(value,fallback)=>/^#[0-9a-f]{6}$/i.test(value||'')?value:fallback;
+function webUrl(value){if(!value)return '';try{const u=new URL(value);return u.protocol==='https:'?u.href:''}catch{return ''}}
+const brandDefaults={kicker:'Moda femenina',hero_title:'Elegancia que se siente tuya',hero_description:'Faldas, blusas, vestidos, cinturones y ropa de iglesia con una experiencia de compra simple y femenina.',hero_badge:'Nueva colección ✨',hero_button:'Ver colección',catalog_title:'Encuentra tu favorito',about:'',hours:'',delivery:'',email:'',phone:'',facebook:'',maps:'',website:'',font:'classic',body_font:'modern',accent:'#9e4763',background:'#fffaf7',text:'#25171d',hero_color:'#4f1428',show_promos:true,promo_titles:['Despacho coordinado','Nuevos ingresos','Guarda favoritos','Compra fácil'],promo_details:['Confirma tu compra por WhatsApp.','Prendas seleccionadas cada semana.','Arma tu selección antes de comprar.','Envía tu carrito completo por WhatsApp.']};
+const brandStyle=document.createElement('style');brandStyle.textContent=`body{background:var(--brand-bg,#fffaf7);color:var(--ink);font-family:var(--body-font,Arial,sans-serif)}.shell h1,.shell h2,.shell h3,.category-card strong,.profile-title{font-family:var(--heading-font,Georgia,serif)!important}.topbar,.bottom{background:var(--brand-bg,#fffaf7)}.hero .btn-light{color:var(--wine)}.brand-logo[hidden],.float-tag[hidden]{display:none!important}.brand-logo{max-width:90px;max-height:60px;object-fit:contain;margin-bottom:8px}.brand-contact{display:flex;flex-wrap:wrap;gap:9px}.brand-info{white-space:pre-line;line-height:1.6}.image-preview{height:90px;max-width:180px;object-fit:contain;border:1px solid var(--line);border-radius:12px}.credentials{white-space:pre-wrap;overflow-wrap:anywhere;font-family:inherit}.field label{display:block}.admin-sheet{scroll-behavior:smooth}`;document.head.appendChild(brandStyle);
 function applyBusiness(business){
-  if(!business)return;
-  activeBusiness=business;
-  document.documentElement.style.setProperty('--wine',business.primary_color||'#772640');
-  document.querySelector('.brand').textContent=business.name;
-  document.title=business.name+' — Catálogo';
-  document.querySelector('.hero-pill').textContent='Selección '+business.name;
-  let links=document.querySelector('#storeLinks');if(!links){links=document.createElement('section');links.id='storeLinks';links.className='section';document.querySelector('main').appendChild(links)}
-  links.replaceChildren();
-  for(const [label,url] of [['Instagram',business.instagram],['TikTok',business.tiktok],['WhatsApp',business.whatsapp?'https://wa.me/'+business.whatsapp:'']]){if(!/^https:\/\//i.test(url||''))continue;const a=document.createElement('a');a.href=url;a.textContent=label;a.target='_blank';a.rel='noopener noreferrer';a.className='btn btn-outline';links.appendChild(a)}
-  const address=document.createElement('p');address.textContent=business.address||'';links.appendChild(address);
-  const hero=document.querySelector('.hero');
-  if(business.hero_image_url){
-    hero.style.background=`linear-gradient(rgba(42,10,22,.35),rgba(42,10,22,.55)),url("${business.hero_image_url}") center/cover`;
-    hero.querySelector('.dress').style.display='none';
-  }
+ if(!business)return;activeBusiness=business;const c={...brandDefaults,...business.customization},style=document.documentElement.style;
+ for(const [key,value] of Object.entries({'--wine':colorValue(business.primary_color,'#772640'),'--wine2':colorValue(c.accent,'#9e4763'),'--brand-bg':colorValue(c.background,'#fffaf7'),'--ink':colorValue(c.text,'#25171d'),'--heading-font':brandFonts[c.font]||brandFonts.classic,'--body-font':brandFonts[c.body_font]||brandFonts.modern}))style.setProperty(key,value);
+ document.querySelector('.brand').textContent=business.name;document.title=business.name+' — Catálogo';
+ const text=(selector,value)=>{document.querySelector(selector).textContent=value};
+ text('.brand-kicker',c.kicker);text('.hero-pill','Selección '+business.name);text('.hero h2',c.hero_title);text('.hero p',c.hero_description);text('.float-tag',c.hero_badge);document.querySelector('.float-tag').hidden=!c.hero_badge;text('.hero .btn',c.hero_button);text('#catalogo .heading h2',c.catalog_title);
+ let logo=document.querySelector('#brandLogo');if(!logo){logo=document.createElement('img');logo.id='brandLogo';logo.className='brand-logo';document.querySelector('.brand').parentElement.prepend(logo)}logo.alt=business.name;const logoUrl=webUrl(business.logo_url);logo.hidden=!logoUrl;if(logoUrl)logo.src=logoUrl;else logo.removeAttribute('src');
+ const hero=document.querySelector('.hero'),cover=webUrl(business.hero_image_url);hero.style.background=cover?`linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.6)),url(${JSON.stringify(cover)}) center/cover`:`linear-gradient(135deg,${colorValue(c.hero_color,'#4f1428')},${colorValue(business.primary_color,'#772640')})`;hero.querySelector('.dress').style.display=cover?'none':'';
+ document.querySelector('.promo-row').hidden=c.show_promos===false;document.querySelector('.promo-row').style.display=c.show_promos===false?'none':'';
+ document.querySelectorAll('.promo').forEach((el,i)=>{el.querySelector('strong').textContent=c.promo_titles?.[i]??brandDefaults.promo_titles[i];el.querySelector('small').textContent=c.promo_details?.[i]??brandDefaults.promo_details[i]});
+ let info=document.querySelector('#storeLinks');if(!info){info=document.createElement('section');info.id='storeLinks';info.className='section';document.querySelector('main').appendChild(info)}info.replaceChildren();
+ for(const [label,value] of [['Sobre nosotros',c.about],['Horarios',c.hours],['Entregas y pagos',c.delivery],['Dirección',business.address]]){if(!value)continue;const h=document.createElement('h3'),p=document.createElement('p');h.textContent=label;p.textContent=value;p.className='brand-info';info.append(h,p)}
+ const links=document.createElement('div');links.className='brand-contact';info.append(links);
+ const phone=String(c.phone||'').replace(/[^+0-9]/g,''),wa=String(business.whatsapp||'').replace(/\D/g,'');
+ for(const [label,url] of [['Instagram',webUrl(business.instagram)],['TikTok',webUrl(business.tiktok)],['Facebook',webUrl(c.facebook)],['Cómo llegar',webUrl(c.maps)],['Sitio web',webUrl(c.website)],['WhatsApp',wa?'https://wa.me/'+wa:''],['Llamar',phone?'tel:'+phone:''],['Correo',/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c.email)?'mailto:'+c.email:'']]){if(!url)continue;const a=document.createElement('a');a.href=url;a.textContent=label;a.target='_blank';a.rel='noopener noreferrer';a.className='btn btn-outline';links.appendChild(a)}
 }
 
 async function loadStore(){
@@ -106,25 +110,33 @@ function showAdminTab(name){
 }
 
 function renderSettings(){
-  const b=managedBusiness;
-  adminContent.querySelector('[data-panel=settings]').innerHTML=`<form id="settingsForm" class="admin-grid">
-  <div class="admin-card"><h3>Información del negocio</h3><div class="field"><label>Nombre</label><input name="name" value="${esc(b.name)}" required></div>
-  <div class="field"><label>WhatsApp con código de país</label><input name="whatsapp" value="${esc(b.whatsapp)}" placeholder="56912345678"></div>
-  <div class="field"><label>Instagram</label><input name="instagram" value="${esc(b.instagram)}" placeholder="https://instagram.com/..."></div>
-  <div class="field"><label>TikTok</label><input name="tiktok" value="${esc(b.tiktok)}"></div><div class="field"><label>Dirección</label><input name="address" value="${esc(b.address)}"></div></div>
-  <div class="admin-card"><h3>Diseño</h3><div class="two-col"><div class="field"><label>Color principal</label><input name="primary_color" type="color" value="${esc(b.primary_color||'#772640')}"></div><div class="field"><label>Portada</label><input id="heroFile" type="file" accept="image/jpeg,image/png,image/webp"></div></div><input name="hero_image_url" type="hidden" value="${esc(b.hero_image_url)}"><label style="display:flex;gap:8px;margin-top:12px"><input name="published" type="checkbox" ${b.published?'checked':''}> Tienda pública activa</label></div>
-  <p class="profile-message" id="settingsMessage"></p><button class="btn btn-wine admin-save">Guardar ajustes</button></form>`;
-  
-  document.querySelector('#settingsForm').onsubmit=saveSettings;
+ const b=managedBusiness,c={...brandDefaults,...b.customization};
+ const field=(name,label,value,type='text',limit=250)=>`<div class="field"><label for="setting-${name}">${label}</label>${type==='textarea'?`<textarea id="setting-${name}" name="${name}" maxlength="${limit}">${esc(value)}</textarea>`:`<input id="setting-${name}" name="${name}" type="${type}" maxlength="${limit}" value="${esc(value)}" ${name==='name'?'required minlength="2"':''}>`}</div>`;
+ const select=(name,label,value)=>`<div class="field"><label for="setting-${name}">${label}</label><select id="setting-${name}" name="${name}">${[['classic','Clásica — Georgia'],['modern','Moderna — Arial'],['rounded','Redondeada — Trebuchet'],['editorial','Editorial — Palatino']].map(([key,label])=>`<option value="${key}" ${value===key?'selected':''}>${label}</option>`).join('')}</select></div>`;
+ const image=(name,label,url)=>`<div class="field"><label for="${name}File">${label}</label>${url?`<img class="image-preview" src="${esc(webUrl(url))}" alt="${label} actual">`:''}<input id="${name}File" type="file" accept="image/jpeg,image/png,image/webp"><input name="${name}_url" type="hidden" value="${esc(url)}"><label><input type="checkbox" name="remove_${name}"> Quitar imagen actual</label><small>JPG, PNG o WebP. Máximo 5 MB.</small></div>`;
+ const card=(title,content)=>`<div class="admin-card"><h3>${title}</h3>${content}</div>`;
+ adminContent.querySelector('[data-panel=settings]').innerHTML=`<form id="settingsForm" class="admin-grid">${card('Información del negocio',field('name','Nombre de la empresa',b.name,'text',80)+field('kicker','Rubro o frase breve',c.kicker)+field('about','Sobre nosotros',c.about,'textarea',3000)+field('address','Dirección',b.address)+field('hours','Horarios de atención',c.hours,'textarea',1000)+field('delivery','Entregas, pagos y condiciones de compra',c.delivery,'textarea',2000))}
+ ${card('Contacto y redes',field('whatsapp','WhatsApp con código de país',b.whatsapp,'tel')+field('phone','Teléfono',c.phone,'tel')+field('email','Correo de contacto',c.email,'email')+['instagram','tiktok'].map(k=>field(k,k==='instagram'?'Instagram':'TikTok',b[k],'url')).join('')+[['facebook','Facebook'],['maps','Enlace de Google Maps'],['website','Sitio web']].map(([k,l])=>field(k,l,c[k],'url')).join('')+'<small>Enlaces completos que comiencen con https://. Los contactos vacíos no se muestran.</small>')}
+ ${card('Logo y portada',image('logo','Logo de la empresa',b.logo_url)+image('hero_image','Foto de portada',b.hero_image_url))}
+ ${card('Colores y letras','<div class="two-col">'+field('primary_color','Color principal',b.primary_color||'#772640','color')+[['accent','Color secundario'],['background','Fondo'],['text','Texto'],['hero_color','Fondo de portada']].map(([k,l])=>field(k,l,c[k],'color')).join('')+select('font','Tipografía de títulos',c.font)+select('body_font','Tipografía de textos',c.body_font)+'</div>')}
+ ${card('Textos de la tienda',field('hero_title','Título de portada',c.hero_title)+field('hero_description','Descripción de portada',c.hero_description,'textarea',1000)+field('hero_badge','Etiqueta de portada',c.hero_badge)+field('hero_button','Texto del botón de portada',c.hero_button)+field('catalog_title','Título del catálogo',c.catalog_title))}
+ ${card('Avisos destacados',`<label><input name="show_promos" type="checkbox" ${c.show_promos?'checked':''}> Mostrar avisos</label>`+Array.from({length:4},(_,i)=>field('promo_title_'+i,'Aviso '+(i+1),c.promo_titles?.[i])+field('promo_detail_'+i,'Detalle '+(i+1),c.promo_details?.[i])).join(''))}
+ ${card('Visibilidad',`<label><input name="published" type="checkbox" ${b.published?'checked':''}> Tienda pública activa</label>`)}
+ <p class="profile-message" id="settingsMessage" role="status"></p><button class="btn btn-wine admin-save">Guardar ajustes</button><button type="button" class="btn btn-outline" onclick="openPublicStore()">Ver tienda pública</button></form>`;
+ document.querySelector('#settingsForm').onsubmit=saveSettings;
 }
-
 async function saveSettings(e){
-  e.preventDefault();const f=new FormData(e.target),message=document.querySelector('#settingsMessage');
-  if(heroFile.files[0]){const url=await uploadImage(heroFile.files[0]);if(!url)return;f.set('hero_image_url',url)}
-  const payload={name:String(f.get('name')).trim(),whatsapp:String(f.get('whatsapp')).replace(/\D/g,''),instagram:String(f.get('instagram')).trim(),tiktok:String(f.get('tiktok')).trim(),address:String(f.get('address')).trim(),primary_color:String(f.get('primary_color')),hero_image_url:String(f.get('hero_image_url')),published:f.get('published')==='on',updated_at:new Date().toISOString()};
-  const {data,error}=await supabaseClient.from('businesses').update(payload).eq('id',managedBusiness.id).select().single();
-  message.textContent=error?error.message:'Cambios guardados correctamente.';
-  if(data){managedBusiness=data;if(activeBusiness?.id===data.id)applyBusiness(data);message.className='profile-message status-ok'}
+ e.preventDefault();const form=e.target,f=new FormData(form),message=document.querySelector('#settingsMessage'),get=k=>String(f.get(k)||'').trim();
+ const customization={...managedBusiness.customization};
+ for(const key of Object.keys(brandDefaults)){if(['promo_titles','promo_details','show_promos'].includes(key))continue;customization[key]=get(key)}
+ customization.show_promos=f.get('show_promos')==='on';customization.promo_titles=Array.from({length:4},(_,i)=>get('promo_title_'+i));customization.promo_details=Array.from({length:4},(_,i)=>get('promo_detail_'+i));
+ for(const key of ['instagram','tiktok','facebook','maps','website']){if(get(key)&&!webUrl(get(key))){message.textContent='Usa un enlace https:// válido en '+key;return}}
+ const wa=get('whatsapp').replace(/\D/g,'');if(wa&&!/^\d{8,15}$/.test(wa)){message.textContent='Escribe el WhatsApp con código de país y entre 8 y 15 dígitos.';return}
+ for(const key of ['logo','hero_image']){const file=form.querySelector('#'+key+'File').files[0];if(file){const url=await uploadImage(file);if(!url)return;f.set(key+'_url',url)}else if(f.get('remove_'+key)==='on')f.set(key+'_url','')}
+ const payload={name:get('name'),whatsapp:wa,instagram:get('instagram'),tiktok:get('tiktok'),address:get('address'),primary_color:get('primary_color'),logo_url:get('logo_url'),hero_image_url:get('hero_image_url'),customization,published:f.get('published')==='on',updated_at:new Date().toISOString()};
+ const {data,error}=await supabaseClient.from('businesses').update(payload).eq('id',managedBusiness.id).select().single();
+ message.textContent=error?error.message:'Todos los ajustes se guardaron correctamente.';
+ if(data){managedBusiness=data;if(activeBusiness?.id===data.id)applyBusiness(data);message.className='profile-message status-ok';renderShare()}
 }
 
 async function uploadImage(file){
@@ -187,10 +199,14 @@ async function renderProfiles(){
 async function createProfile(e){
   e.preventDefault();const f=new FormData(e.target),message=document.querySelector('#profileCreateMessage');
   const {data,error}=await supabaseClient.functions.invoke('create-business-admin',{body:{businessName:f.get('businessName'),username:f.get('username'),password:f.get('password'),slug:f.get('slug')}});
-  if(error||data?.error){message.textContent=data?.error||error.message;return}
+  if(error||data?.error){let detail=data?.error;try{if(!detail&&error?.context)detail=(await error.context.json()).error}catch{}message.textContent=detail||error.message;return}
   const link=appBaseUrl+'?tienda='+data.business.slug;
-  message.className='profile-message status-ok';message.innerHTML='Perfil creado. Usuario: <strong>'+esc(data.user.username)+'</strong><br>Link: '+esc(link);
-  e.target.reset();
+  const credentials='Negocio: '+data.business.name+'\nEnlace: '+link+'\nUsuario: '+data.user.username+'\nContraseña: '+String(f.get('password'))+'\nIngresa en Perfil para administrar tu tienda.';
+  await renderProfiles();
+  const result=document.createElement('div');result.className='admin-card';
+  const info=document.createElement('p');info.textContent='Perfil creado: '+data.user.username+'. Copia el acceso para entregárselo al administrador. La contraseña no se podrá consultar después.';
+  const button=document.createElement('button');button.type='button';button.className='btn btn-wine';button.textContent='Copiar usuario, contraseña y enlace';button.onclick=async()=>{try{await navigator.clipboard.writeText(credentials);toast('Acceso copiado')}catch{const area=document.createElement('textarea');area.readOnly=true;area.value=credentials;area.className='credentials';result.appendChild(area);area.select()}};
+  result.append(info,button);adminContent.querySelector('[data-panel=profiles]').prepend(result);
 }
 
 directWhatsapp=function(){

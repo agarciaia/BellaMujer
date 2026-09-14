@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bellamujer-v3-admin';
+const CACHE_NAME = 'bellamujer-v4-branding';
 const APP_SHELL = [
   './',
   './index.html',
