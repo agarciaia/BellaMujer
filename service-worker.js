@@ -1,7 +1,8 @@
-const CACHE_NAME = 'bellamujer-v2-profile';
+const CACHE_NAME = 'bellamujer-v3-admin';
 const APP_SHELL = [
   './',
   './index.html',
+  './admin.js',
   './manifest.json',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.svg',
