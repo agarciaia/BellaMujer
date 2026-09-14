@@ -124,6 +124,7 @@ function renderSettings(){
  ${card('Visibilidad',`<label><input name="published" type="checkbox" ${b.published?'checked':''}> Tienda pública activa</label>`)}
  <p class="profile-message" id="settingsMessage" role="status"></p><button class="btn btn-wine admin-save">Guardar ajustes</button><button type="button" class="btn btn-outline" onclick="openPublicStore()">Ver tienda pública</button></form>`;
  document.querySelector('#settingsForm').onsubmit=saveSettings;
+ bindImagePreview(document.querySelector('#logoFile'));bindImagePreview(document.querySelector('#hero_imageFile'));
 }
 async function saveSettings(e){
  e.preventDefault();const form=e.target,f=new FormData(form),message=document.querySelector('#settingsMessage'),get=k=>String(f.get(k)||'').trim();
@@ -163,6 +164,7 @@ function productForm(p={}){
   <div class="two-col"><div class="field"><label>Precio anterior</label><input name="old_price" type="number" min="0" value="${esc(p.old_price||0)}"></div><div class="field"><label>Foto</label><input id="productFile" type="file" accept="image/jpeg,image/png,image/webp"></div></div>
   <input name="image_url" type="hidden" value="${esc(p.image_url)}"><div class="field"><label>Descripción</label><textarea name="description">${esc(p.description)}</textarea></div><div class="field"><label>Tallas separadas por coma</label><input name="sizes" value="${esc((p.sizes||[]).join(', '))}"></div><div class="field"><label>Colores separados por coma</label><input name="colors" value="${esc((p.colors||[]).join(', '))}"></div><label style="display:flex;gap:8px"><input name="active" type="checkbox" ${p.active!==false?'checked':''}> Producto visible</label></div><p class="profile-message" id="productMessage"></p><button class="btn btn-wine">Guardar producto</button></form>`;
   
+  bindImagePreview(document.querySelector('#productFile'));
   document.querySelector('#productForm').onsubmit=e=>saveProduct(e,p.id);
 }
 
@@ -236,3 +238,15 @@ const originalLogout=logoutProfile;
 logoutProfile=async function(){await originalLogout();activeUser=null;managedBusiness=null;closeModal('adminModal');await loadStore()};
 function guardedSubmit(action){return async function(event,...args){event.preventDefault();const form=event.currentTarget||event.target;if(form.dataset.busy)return;form.dataset.busy='1';const buttons=[...form.querySelectorAll('button')];buttons.forEach(b=>b.disabled=true);try{await action(event,...args)}catch(error){toast('No se pudo guardar. Revisa la conexión e intenta nuevamente.');console.error(error)}finally{delete form.dataset.busy;buttons.forEach(b=>b.disabled=false)}}}
 saveSettings=guardedSubmit(saveSettings);saveProduct=guardedSubmit(saveProduct);createProfile=guardedSubmit(createProfile);
+
+function bindImagePreview(input){
+ if(!input)return;
+ const preview=document.createElement('img');preview.className='image-preview';preview.alt='Vista previa de la imagen seleccionada';preview.style.display='none';
+ const status=document.createElement('p');status.className='profile-message';status.setAttribute('role','status');input.after(preview,status);
+ input.addEventListener('change',()=>{
+  const file=input.files[0];preview.style.display='none';status.textContent='';
+  if(!file)return;
+  if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>5*1024*1024){status.textContent='Usa una imagen JPG, PNG o WebP de hasta 5 MB.';input.value='';return}
+  const reader=new FileReader();reader.onload=()=>{preview.src=String(reader.result);preview.style.display='block';status.textContent='Imagen seleccionada. Pulsa Guardar para publicarla.'};reader.onerror=()=>{status.textContent='No se pudo leer esta imagen. Selecciona otra.'};reader.readAsDataURL(file);
+ });
+}
