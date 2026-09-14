@@ -39,4 +39,10 @@ npm install --prefix /tmp/bellamujer-tests jsdom
 JSDOM_PATH=/tmp/bellamujer-tests/node_modules/jsdom node tests/admin.test.cjs
 ```
 
-Las pruebas cubren carga del panel, catálogo vacío, acciones UUID, escape de contenido y carrito por tienda. Las políticas se probaron con transacciones revertidas en Supabase. El inicio de sesión con la cuenta real del propietario necesita una comprobación autorizada separada.
+Las pruebas cubren carga del panel, catálogo vacío, acciones UUID, escape de contenido y carrito por tienda. Las políticas se probaron con transacciones revertidas en Supabase. El propietario autorizó y superó la prueba de inicio de sesión.
+
+## Personalización por administrador
+
+Ajustes permite editar nombre, rubro, logo, portada, cinco colores, tipografías de títulos y cuerpo, textos de portada/catálogo, avisos, horarios, descripción, dirección, entregas/pagos, teléfono, correo, WhatsApp, Instagram, TikTok, Facebook, Maps y sitio web. Los campos vacíos de contacto se ocultan. Todas las opciones se guardan en el negocio asignado y se aplican en su enlace público.
+
+Perfiles permite crear tantos negocios/administradores como se necesiten dentro de las cuotas del servicio. Al crear uno, el superadministrador puede copiar usuario, contraseña y enlace para entregarlos. La contraseña no se guarda en las tablas ni se puede consultar después.
