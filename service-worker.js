@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bellamujer-v1';
+const CACHE_NAME = 'bellamujer-v2-profile';
 const APP_SHELL = [
   './',
   './index.html',
@@ -22,6 +22,8 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+  const requestUrl = new URL(event.request.url);
+  if (requestUrl.origin !== self.location.origin) return;
   event.respondWith(
     fetch(event.request)
       .then(response => {
