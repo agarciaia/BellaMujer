@@ -64,11 +64,13 @@ async function loadStore(){
 
 async function resolveBusinessForUser(user){
   if(user.id===SUPERADMIN_USER_ID){
+    window.accessExpired=false;
     return await fetchBusiness('bellamujer');
   }
-  const {data:membership}=await supabaseClient.from('business_members').select('business_id').eq('user_id',user.id).eq('active',true).maybeSingle();
+  const {data:membership}=await supabaseClient.from('business_members').select('business_id,trial_ends_at').eq('user_id',user.id).eq('active',true).maybeSingle();
   const businessId=membership?.business_id;
   if(!businessId)return null;
+  window.accessExpired=Boolean(membership.trial_ends_at&&new Date(membership.trial_ends_at)<=new Date());
   const {data}=await supabaseClient.from('businesses').select('*').eq('id',businessId).maybeSingle();
   return data;
 }
@@ -151,7 +153,7 @@ async function uploadImage(file){
 
 async function renderProductAdmin(){
   const panel=adminContent.querySelector('[data-panel=products]');
-  const {data,error}=await supabaseClient.from('products').select('*').eq('business_id',managedBusiness.id).order('created_at',{ascending:false});
+  const {data,error}=await supabaseClient.from('products').select('*').eq('business_id',managedBusiness.id).order('sort_order').order('created_at',{ascending:false});
   adminProductsCache=data||[];
   panel.innerHTML=`<button class="btn btn-wine" style="width:100%;margin-bottom:12px" onclick="productForm()">＋ Subir producto</button><div class="admin-list" id="adminProductList"></div>`;
   if(error){adminProductList.innerHTML='<div class="notice">'+esc(error.message)+'</div>';return}
@@ -191,7 +193,8 @@ function renderShare(){
 
 async function renderProfiles(){
   const panel=adminContent.querySelector('[data-panel=profiles]');
-  const {data}=await supabaseClient.from('business_members').select('user_id,username,role,active,business_id,businesses(name,slug)').order('created_at',{ascending:false});
+  const {data}=await supabaseClient.from('business_members').select('user_id,username,role,active,trial_ends_at,business_id,businesses(name,slug)').order('created_at',{ascending:false});
+  window.profileMembers=data||[];
   panel.innerHTML=`<form id="createProfileForm" class="admin-grid"><div class="admin-card"><h3>Crear perfil de cliente</h3><div class="field"><label>Nombre del negocio</label><input name="businessName" required></div><div class="field"><label>Usuario</label><input name="username" pattern="[a-zA-Z0-9._-]{3,30}" required></div><div class="field"><label>Contraseña</label><input name="password" type="password" minlength="6" required></div><div class="field"><label>Nombre del enlace</label><input name="slug" placeholder="se completa automáticamente"></div></div><p class="profile-message" id="profileCreateMessage"></p><button class="btn btn-wine">Crear perfil y tienda</button></form><h3 style="margin-top:22px">Perfiles creados</h3><div class="admin-list">${(data||[]).map(x=>`<div class="admin-card"><strong>${esc(x.businesses?.name||'Negocio')}</strong><div>Usuario: ${esc(x.username)}</div><small>${x.active?'Activo':'Suspendido'} · /${esc(x.businesses?.slug||'')}</small><div class="small-actions"><button onclick="manageBusiness('${x.business_id}')">Administrar tienda</button>${x.user_id!==SUPERADMIN_USER_ID?`<button onclick="toggleMember('${x.user_id}','${x.business_id}',${!x.active})">${x.active?'Suspender acceso':'Activar acceso'}</button>`:''}</div></div>`).join('')}</div>`;
   document.querySelector('#createProfileForm').onsubmit=createProfile;
   const businessName=document.querySelector('#createProfileForm [name=businessName]'),slug=document.querySelector('#createProfileForm [name=slug]');
