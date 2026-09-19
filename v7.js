@@ -156,7 +156,31 @@ openProduct=function(id){
  const track=productDetail.querySelector('.pd-main-track');track?.addEventListener('scroll',()=>{const i=Math.round(track.scrollLeft/(track.clientWidth||1));productDetail.querySelectorAll('.pd-thumb').forEach((b,j)=>b.classList.toggle('active',i===j))},{passive:true});productDetail.querySelector('#detailAddCart').onclick=addCart;productDetail.querySelector('#detailWhatsapp').onclick=directWhatsapp;productModal.classList.add('show');productDetail.querySelector('.pd-scroll').scrollTop=0;
 };
 addCart=function(){if(!current)return toast('Selecciona un producto');if(current.availability==='sold_out')return toast('Este producto está agotado');const detail=document.querySelector('#productDetail'),selectedSize=detail.querySelector('[data-variant=size] .selected')?.textContent||current.sizes?.[0]||'Única',selectedColor=detail.querySelector('[data-variant=color] .selected')?.textContent||current.colors?.[0]||'Consultar',key=current.id+'|'+selectedSize+'|'+selectedColor,row=cart.find(x=>x.key===key);if(row)row.qty=Number(row.qty||0)+1;else cart.push({key,id:current.id,name:current.name,price:Number(current.price),img:current.img,size:selectedSize,color:selectedColor,qty:1});save();closeModal('productModal');openCart();toast('Producto agregado al carrito')};
-directWhatsapp=function(){if(!current||current.availability==='sold_out')return toast('Este producto está agotado');const size=productDetail.querySelector('[data-variant=size] .selected')?.textContent||'',color=productDetail.querySelector('[data-variant=color] .selected')?.textContent||'',number=(activeBusiness?.whatsapp||'').replace(/\D/g,'');if(!number)return toast('El negocio aún no configuró WhatsApp');window.open('https://wa.me/'+number+'?text='+encodeURIComponent(`Hola, quiero consultar por ${current.name} | Talla: ${size} | Color: ${color} | ${CLP(current.price)}`),'_blank')};
+function orderProductEmoji(product){
+ const value=String((product?.name||'')+' '+(product?.cat||product?.category||'')).toLowerCase();
+ if(value.includes('corazón')||value.includes('corazon'))return '❤️';
+ if(value.includes('falda')||value.includes('vestido'))return '👗';
+ if(value.includes('polera')||value.includes('blusa')||value.includes('camisa'))return '👚';
+ if(value.includes('zapato')||value.includes('calzado'))return '👠';
+ if(value.includes('cintur')||value.includes('cartera')||value.includes('bolso'))return '👜';
+ if(value.includes('chaqueta')||value.includes('abrigo'))return '🧥';
+ return '✨';
+}
+function buildWhatsappOrder(items,customer={}){
+ const store=String(activeBusiness?.name||'la tienda').toLocaleUpperCase('es-CL'),name=customer.name||'Sin indicar',commune=customer.commune||'Sin indicar',notes=customer.notes||'Sin observaciones';
+ const productsText=items.map(x=>`${orderProductEmoji(x)} *${x.name}*\n• Talla: ${x.size||'Única'}\n• Color: ${x.color||'Consultar'}\n• Cantidad: ${Number(x.qty||1)}\n• Precio: ${CLP(Number(x.price||0)*Number(x.qty||1))}`).join('\n\n');
+ const total=items.reduce((sum,x)=>sum+Number(x.price||0)*Number(x.qty||1),0);
+ return `🛍️ *NUEVO PEDIDO — ${store}*\n\nHola 👋 Quiero realizar el siguiente pedido:\n\n━━━━━━━━━━━━━━\n🛒 *PRODUCTOS*\n\n${productsText}\n\n━━━━━━━━━━━━━━\n💰 *TOTAL: ${CLP(total)}*\n━━━━━━━━━━━━━━\n\n👤 *Cliente:* ${name}\n📍 *Comuna:* ${commune}\n📝 *Observaciones:* ${notes}\n\n✅ Quedo atento/a a la confirmación de disponibilidad y coordinación del pedido. ¡Gracias!`;
+}
+orderWhatsapp=function(){
+ if(!cart.length)return toast('Tu carrito está vacío');const number=(activeBusiness?.whatsapp||'').replace(/\D/g,'');if(!number)return toast('El negocio aún no configuró WhatsApp');
+ const customer={name:document.querySelector('#buyerName')?.value.trim()||'Sin indicar',commune:document.querySelector('#buyerCommune')?.value.trim()||'Sin indicar',notes:document.querySelector('#buyerNotes')?.value.trim()||'Sin observaciones'};
+ window.open('https://wa.me/'+number+'?text='+encodeURIComponent(buildWhatsappOrder(cart,customer)),'_blank');
+};
+directWhatsapp=function(){
+ if(!current||current.availability==='sold_out')return toast('Este producto está agotado');const size=productDetail.querySelector('[data-variant=size] .selected')?.textContent||'',color=productDetail.querySelector('[data-variant=color] .selected')?.textContent||'',number=(activeBusiness?.whatsapp||'').replace(/\D/g,'');if(!number)return toast('El negocio aún no configuró WhatsApp');
+ window.open('https://wa.me/'+number+'?text='+encodeURIComponent(buildWhatsappOrder([{...current,size,color,qty:1}],{})),'_blank');
+};
 
 renderProfiles=async function(){
  const panel=adminContent.querySelector('[data-panel=profiles]');if(!panel)return;const [{data:businesses,error},{data:members}]=await Promise.all([supabaseClient.from('businesses').select('*').order('created_at',{ascending:false}),supabaseClient.from('business_members').select('user_id,username,role,active,trial_ends_at,business_id').order('created_at',{ascending:false})]);if(error){panel.innerHTML='<div class="notice">'+esc(error.message)+'</div>';return}window.profileMembers=members||[];
