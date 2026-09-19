@@ -4,9 +4,9 @@ const v7RenderSettings=renderSettings;
 
 const v7Style=document.createElement('style');
 v7Style.textContent=`
-body.portal-mode{background:#f7f7f8;color:#25242a}body.portal-mode .topbar{background:rgba(255,255,255,.94);border-color:#e8e8ec}body.portal-mode .brand{font-family:Inter,system-ui,sans-serif!important;color:#24232a;font-size:1.35rem}body.portal-mode .brand-kicker{color:#76727d}body.portal-mode #brandLogo,body.portal-mode .top-actions{display:none!important}body.portal-mode .shell{max-width:1160px;padding-bottom:84px}body.portal-mode main>:not(#portalHome){display:none!important}body.portal-mode .bottom .nav:not(#profileNav){display:none}body.portal-mode .bottom{display:flex;justify-content:center}body.portal-mode #profileNav{min-width:180px}
+body.portal-mode{background:#f7f7f8;color:#25242a}body.portal-mode .topbar{background:rgba(255,255,255,.94);border-color:#e8e8ec}body.portal-mode .brand{font-family:Inter,system-ui,sans-serif!important;color:#24232a;font-size:1.35rem}body.portal-mode .brand-kicker{color:#76727d}body.portal-mode #brandLogo,body.portal-mode .top-actions{display:none!important}body.portal-mode .shell{max-width:1160px;padding-bottom:84px}body.portal-mode main>:not(#portalHome){display:none!important}body.portal-mode .bottom .nav:not(#profileNav){display:none}body.portal-mode .bottom{display:flex;justify-content:center}body.portal-mode #profileNav{min-width:180px}.portal-login{display:grid;gap:12px;justify-items:center}.portal-login .btn{min-width:220px}.portal-admin-actions{display:flex;justify-content:center;margin:0 0 24px}
 .portal-home{padding:54px 18px 110px}.portal-intro{max-width:680px;margin:0 auto 34px;text-align:center}.portal-intro .portal-mark{width:58px;height:58px;display:grid;place-items:center;margin:0 auto 18px;border-radius:18px;background:#24232a;color:#fff;font-size:1.6rem}.portal-intro h2{font:700 clamp(2rem,7vw,3.6rem)/1.05 Inter,system-ui,sans-serif!important;margin:0 0 13px}.portal-intro p{color:#716d78;line-height:1.65;margin:0}.portal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}.portal-card{display:block;overflow:hidden;border:1px solid #e5e4e8;border-radius:22px;background:#fff;color:#25242a;text-decoration:none;box-shadow:0 10px 32px #2321280a;transition:.2s}.portal-card:hover{transform:translateY(-3px);box-shadow:0 16px 38px #23212816}.portal-cover{height:185px;background:linear-gradient(135deg,#eeeef1,#fafafa);position:relative;overflow:hidden}.portal-cover>img{width:100%;height:100%;object-fit:cover}.portal-logo{position:absolute;left:16px;bottom:14px;width:58px!important;height:58px!important;object-fit:contain!important;border-radius:16px;background:#fff;padding:7px;box-shadow:0 7px 22px #0002}.portal-card-body{padding:18px}.portal-card-body h3{font:800 1.2rem Inter,system-ui,sans-serif!important;margin:0 0 7px}.portal-card-body span{color:#6f6c75;font-size:.86rem}.portal-open{float:right;color:#24232a!important;font-weight:800}.portal-empty{max-width:560px;margin:auto;padding:36px;text-align:center;background:#fff;border:1px solid #e5e4e8;border-radius:22px;color:#716d78}
-#storeActions{padding:0 16px 12px}.store-action-row{display:flex;gap:8px;overflow-x:auto;padding:2px 0 6px;scrollbar-width:none}.store-action-row .btn{white-space:nowrap;padding:9px 12px;border-radius:999px;font-size:.78rem;background:#fff}.store-action-row:empty{display:none}#storeLinks{padding-top:18px}.promo-row{gap:7px}.promo{min-height:66px;padding:7px 8px;border-radius:14px;grid-template-columns:20px 1fr}.promo strong{font-size:.71rem}.promo small{font-size:.61rem}.promo span{font-size:.9rem}
+#storeActions{padding:4px 16px 14px}.store-action-row{display:flex;gap:10px;overflow-x:auto;padding:3px 1px 8px;scrollbar-width:none}.store-action-row .contact-button{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;padding:11px 15px;border-radius:15px;font-size:.82rem;font-weight:850;background:#fff;box-shadow:0 5px 16px #2d20270d}.contact-icon{display:grid;place-items:center;width:23px;height:23px;color:var(--wine)}.contact-icon svg{width:23px;height:23px;display:block}.store-action-row:empty{display:none}#storeLinks{padding-top:18px}.promo-row{gap:7px}.promo{min-height:66px;padding:7px 8px;border-radius:14px;grid-template-columns:20px 1fr}.promo strong{font-size:.71rem}.promo small{font-size:.61rem}.promo span{font-size:.9rem}
 .category-strip{grid-auto-columns:35%;gap:8px}.category-card{min-height:78px;border-radius:16px;padding:10px 11px}.cat-icon{font-size:1.15rem;margin-bottom:7px}.category-card strong{font-size:.82rem!important}.photo-count{position:absolute;right:9px;bottom:9px;background:#211d20cc;color:#fff;border-radius:999px;padding:5px 8px;font-size:.68rem;font-weight:900}.availability-badge{position:absolute;left:9px;bottom:9px;background:#fff;color:#18733c;border-radius:999px;padding:5px 8px;font-size:.65rem;font-weight:900;box-shadow:0 4px 12px #0001}.availability-badge.sold-out{color:#fff;background:#5b5860}.sale.sold{top:10px;background:#5b5860}.sale+.sale.sold{top:42px}
 .image-field-simple{position:relative}.image-field-simple .image-preview{margin:8px 0}.image-tools{display:flex;gap:8px;align-items:center;margin-top:8px}.image-tools button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 10px;color:#a12648}.product-photo-slots{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.product-photo-slot{border:1px dashed #cfc7cc;border-radius:14px;padding:8px;min-width:0}.product-photo-slot img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:10px;background:#f4eff2}.product-photo-slot label{display:block;text-align:center;font-size:.72rem;font-weight:800;margin:7px 0 4px}.product-photo-slot input[type=file]{width:100%;font-size:.68rem}.slot-remove{width:100%;border:0;background:#fff0f3;color:#a12648;border-radius:9px;padding:7px;margin-top:6px;font-size:.72rem;font-weight:800}.availability-select{font-weight:800}.admin-business-card{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}.admin-business-card .small-actions{grid-column:1/-1;flex-wrap:wrap}.business-danger{margin-left:auto!important}
 #productModal{align-items:stretch!important;justify-content:center!important;background:#fff}#productModal>.sheet{width:100%!important;max-width:1040px!important;height:100dvh!important;max-height:100dvh!important;border-radius:0!important}#productModal>.sheet>.close{position:fixed;right:14px;top:14px;z-index:78;background:#ffffffe8;box-shadow:0 5px 18px #0002}#productModal .pd-scroll{display:block!important;padding:0!important}.pd-layout{display:grid;min-height:0}.pd-gallery-wrap{background:#f6f3f5;padding:52px 12px 14px;min-width:0}.pd-main-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border-radius:18px}.pd-main-button{border:0;background:transparent;padding:0;min-width:100%;scroll-snap-align:center}.pd-main-button img{width:100%;height:min(58dvh,620px);object-fit:contain;background:#fff;border-radius:18px}.pd-thumbs{display:flex;justify-content:center;gap:8px;margin-top:10px}.pd-thumb{width:52px;height:62px;border:2px solid transparent;border-radius:10px;padding:0;background:#fff;overflow:hidden}.pd-thumb.active{border-color:var(--wine)}.pd-thumb img{width:100%;height:100%;object-fit:cover}.pd-info{padding:22px 18px 28px}.pd-info h2{font-size:clamp(1.65rem,5vw,2.4rem)!important}.pd-description-block{margin:18px 0;padding:16px;border-radius:15px;background:var(--brand-bg,#faf7f8);line-height:1.6;white-space:pre-line}.pd-description-block h3{font:800 .95rem Inter,system-ui,sans-serif!important;margin:0 0 7px}.stock-state{display:inline-flex;padding:7px 10px;border-radius:999px;background:#eaf8ef;color:#18733c}.stock-state.sold-out{background:#efedef;color:#55515a}.pd-actions{position:sticky;bottom:0}.pd-actions button:disabled{filter:grayscale(1);opacity:.55;cursor:not-allowed}
@@ -17,6 +17,17 @@ body.portal-mode{background:#f7f7f8;color:#25242a}body.portal-mode .topbar{backg
 document.head.appendChild(v7Style);
 
 function isPortalHome(){return !new URLSearchParams(location.search).get('tienda')}
+function isSuperUser(user){return Boolean(user&&(user.id===SUPERADMIN_USER_ID||user.app_metadata?.role==='superadmin'))}
+async function authenticatedUser(){
+ if(supabaseClient.auth.getUser){const {data,error}=await supabaseClient.auth.getUser();return error?null:data?.user||null}
+ const {data}=await supabaseClient.auth.getSession();return data?.session?.user||null;
+}
+function portalShell(inner){
+ document.body.classList.add('portal-mode');activeBusiness=null;document.title='Acceso a tiendas';
+ document.querySelector('.brand-kicker').textContent='Administración privada';document.querySelector('.brand').textContent='Portal de tiendas';
+ let portal=document.querySelector('#portalHome');if(!portal){portal=document.createElement('section');portal.id='portalHome';portal.className='portal-home';document.querySelector('main').appendChild(portal)}
+ portal.innerHTML=inner;return portal;
+}
 function iconForCategory(name,stored=''){
  const legacy=['◇','◒','♢','♚','◉','✧','✦'];if(stored&&!legacy.includes(stored))return stored;
  const value=String(name||'').toLowerCase();
@@ -24,21 +35,29 @@ function iconForCategory(name,stored=''){
 }
 
 async function renderBusinessPortal(){
- document.body.classList.add('portal-mode');activeBusiness=null;document.title='Directorio de tiendas';
- document.querySelector('.brand-kicker').textContent='Catálogos digitales';document.querySelector('.brand').textContent='Tiendas';
- let portal=document.querySelector('#portalHome');if(!portal){portal=document.createElement('section');portal.id='portalHome';portal.className='portal-home';document.querySelector('main').appendChild(portal)}
- portal.innerHTML='<div class="portal-intro"><span class="portal-mark">⌂</span><p class="eyebrow">Bienvenido</p><h2>Elige una tienda para comenzar</h2><p>Cada negocio tiene su propio catálogo, enlace y código QR.</p></div><div class="portal-empty">Cargando tiendas…</div>';
+ const portal=portalShell('<div class="portal-intro"><span class="portal-mark">⌂</span><p class="eyebrow">Acceso privado</p><h2>Portal de administración</h2><p>Ingresa con tu usuario para administrar la tienda que tienes asignada.</p></div><div class="portal-empty">Comprobando acceso…</div>');
  if(!authReady())return;
- const {data,error}=await supabaseClient.from('businesses').select('*').eq('published',true).order('created_at',{ascending:true});
+ const user=await authenticatedUser();
+ if(!user){portal.innerHTML='<div class="portal-intro"><span class="portal-mark">⌂</span><p class="eyebrow">Acceso privado</p><h2>Administra tu tienda</h2><p>El portal general no es público. Ingresa con el usuario y contraseña de tu negocio.</p></div><div class="portal-empty portal-login"><strong>¿Tienes una cuenta de administración?</strong><button class="btn btn-wine" type="button" onclick="openProfile()">Ingresar</button><small>Los clientes deben abrir el enlace o código QR de la tienda.</small></div>';return}
+ activeUser=user;
+ if(!isSuperUser(user)){
+  const business=await resolveBusinessForUser(user);managedBusiness=business;
+  if(business){location.replace(appBaseUrl+'?tienda='+encodeURIComponent(business.slug));return}
+  portal.innerHTML='<div class="portal-intro"><span class="portal-mark">!</span><p class="eyebrow">Cuenta sin tienda</p><h2>No tienes una página asignada</h2><p>Solicita al superadministrador que revise el acceso de tu perfil.</p></div>';return;
+ }
+ document.title='Directorio privado — Superadministración';document.querySelector('.brand-kicker').textContent='Superadministración';document.querySelector('.brand').textContent='Todas las tiendas';
+ const {data,error}=await supabaseClient.from('businesses').select('*').order('created_at',{ascending:true});
  if(error){portal.innerHTML+='<div class="portal-empty">No fue posible cargar las tiendas. Intenta nuevamente.</div>';return}
  const rows=data||[];
- portal.innerHTML=`<div class="portal-intro"><span class="portal-mark">⌂</span><p class="eyebrow">Bienvenido</p><h2>Elige una tienda para comenzar</h2><p>Cada negocio tiene su propio catálogo, enlace y código QR.</p></div>${rows.length?`<div class="portal-grid">${rows.map(b=>{const hero=webUrl(b.hero_image_url),logo=webUrl(b.logo_url);return `<a class="portal-card" href="?tienda=${encodeURIComponent(b.slug)}"><div class="portal-cover" style="${hero?`background-image:url(${JSON.stringify(hero)});background-size:cover;background-position:center`:''}">${logo?`<img class="portal-logo" src="${esc(logo)}" alt="Logo de ${esc(b.name)}">`:''}</div><div class="portal-card-body"><span class="portal-open">Entrar →</span><h3>${esc(b.name)}</h3><span>Ver catálogo</span></div></a>`}).join('')}</div>`:'<div class="portal-empty">Aún no hay tiendas públicas disponibles.</div>'}`;
+ portal.innerHTML=`<div class="portal-intro"><span class="portal-mark">✦</span><p class="eyebrow">Superadministración</p><h2>Todas las tiendas</h2><p>Solo tu cuenta puede ver este directorio, crear páginas y administrar todos los perfiles.</p></div><div class="portal-admin-actions"><button class="btn btn-wine" type="button" onclick="managedBusiness=null;openAdminDashboard('profiles')">＋ Crear y administrar tiendas</button></div>${rows.length?`<div class="portal-grid">${rows.map(b=>{const hero=webUrl(b.hero_image_url),logo=webUrl(b.logo_url);return `<a class="portal-card" href="?tienda=${encodeURIComponent(b.slug)}"><div class="portal-cover" style="${hero?`background-image:url(${JSON.stringify(hero)});background-size:cover;background-position:center`:''}">${logo?`<img class="portal-logo" src="${esc(logo)}" alt="Logo de ${esc(b.name)}">`:''}</div><div class="portal-card-body"><span class="portal-open">Entrar →</span><h3>${esc(b.name)}</h3><span>${b.published?'Página activa':'Página no publicada'}</span></div></a>`}).join('')}</div>`:'<div class="portal-empty">Todavía no has creado tiendas.</div>'}`;
 }
 
 loadStore=async function(){
  if(isPortalHome()){await renderBusinessPortal();return}
  document.body.classList.remove('portal-mode');document.querySelector('#portalHome')?.remove();
- const slug=new URLSearchParams(location.search).get('tienda'),business=await fetchBusiness(slug);
+ const slug=new URLSearchParams(location.search).get('tienda'),user=authReady()?await authenticatedUser():null;
+ if(user&&!isSuperUser(user)){const assigned=await resolveBusinessForUser(user);if(assigned&&assigned.slug!==slug){location.replace(appBaseUrl+'?tienda='+encodeURIComponent(assigned.slug));return}}
+ const business=await fetchBusiness(slug);
  if(!business){activeBusiness=null;products.splice(0);cats.splice(0,cats.length,'Todas');renderCats();render();count.textContent='Tienda no disponible';return}
  applyBusiness(business);
  const [productResult,categoryResult]=await Promise.all([
@@ -56,10 +75,25 @@ applyBusiness=function(b){
  v7ApplyBusiness(b);document.body.classList.remove('portal-mode');
  let actions=document.querySelector('#storeActions');if(!actions){actions=document.createElement('section');actions.id='storeActions';document.querySelector('.hero').after(actions)}
  const info=document.querySelector('#storeLinks'),links=info?.querySelector('.brand-contact');actions.replaceChildren();
- if(links){links.className='store-action-row';actions.append(links)}
+ if(links){links.className='store-action-row';links.querySelectorAll('a').forEach(link=>{const label=link.textContent.trim();link.className='btn btn-outline contact-button';link.dataset.contact=label.toLowerCase().replace(/\s+/g,'-');link.innerHTML=`<span class="contact-icon" aria-hidden="true">${contactIcon(label)}</span><span>${esc(label)}</span>`});actions.append(links)}
  actions.hidden=!actions.querySelector('a');
  if(info)info.hidden=!info.children.length;
 };
+
+function contactIcon(label){
+ const common='viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"';
+ const icons={
+  WhatsApp:`<svg ${common}><path d="M20.5 11.7a8.4 8.4 0 0 1-12.4 7.4L3 20.5l1.4-4.9A8.4 8.4 0 1 1 20.5 11.7Z"/><path d="M8.2 7.8c.2-.5.4-.5.7-.5h.5c.2 0 .4.1.5.4l.8 2c.1.3 0 .5-.2.7l-.7.8c-.2.2-.1.4 0 .6.7 1.3 1.7 2.3 3 3 .2.1.4.2.6 0l.9-1.1c.2-.2.4-.3.7-.2l2 .9c.3.1.4.3.4.5 0 .3-.2 1.4-.8 1.9-.5.5-1.2.8-2 .8-.5 0-1.2-.1-2-.4-1.2-.4-2.8-1.2-4.4-2.7-1.3-1.2-2.2-2.7-2.5-3.7-.4-1-.4-1.8-.1-2.4.2-.3.4-.5.6-.6Z" fill="currentColor" stroke="none"/></svg>`,
+  Instagram:`<svg ${common}><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>`,
+  TikTok:`<svg ${common}><path d="M15 4v10.3a4.3 4.3 0 1 1-3.6-4.2"/><path d="M15 4c.7 2.4 2.2 3.8 4.5 4"/></svg>`,
+  Facebook:`<svg ${common}><path d="M14 21v-8h3l.5-3H14V8.2c0-.9.3-1.7 1.8-1.7H18V3.8c-.6-.1-1.5-.2-2.6-.2-2.7 0-4.4 1.6-4.4 4.6V10H8v3h3v8"/></svg>`,
+  'Cómo llegar':`<svg ${common}><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>`,
+  'Sitio web':`<svg ${common}><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>`,
+  Llamar:`<svg ${common}><path d="M6.6 3.8 9 7.7 7.6 9.4c1.3 2.7 3.3 4.7 6 6l1.7-1.4 3.9 2.4-.7 3c-.2.8-.9 1.3-1.7 1.3C9.3 20.2 3.8 14.7 3.3 7.2c0-.8.5-1.5 1.3-1.7l2-.5Z"/></svg>`,
+  Correo:`<svg ${common}><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>`
+ };
+ return icons[label]||icons['Sitio web'];
+}
 
 renderCats=function(){categories.innerHTML=cats.map(c=>`<button class="category-card ${selectedCat===c?'active':''}" data-cat="${escapeHtml(c)}" onclick="setCat(this.dataset.cat)"><span class="cat-icon">${c==='Todas'?'✨':escapeHtml(iconForCategory(c,window.categoryIcons?.[c]))}</span><strong>${escapeHtml(c)}</strong></button>`).join('')};
 render=function(){
@@ -73,7 +107,9 @@ resolveBusinessForUser=async function(user){
 };
 
 accountView=async function(user){
- activeUser=user;const isSuper=user.id===SUPERADMIN_USER_ID||user.app_metadata?.role==='superadmin',business=await resolveBusinessForUser(user);managedBusiness=business;
+ activeUser=user;const isSuper=isSuperUser(user),business=await resolveBusinessForUser(user);managedBusiness=business;
+ if(!isSuper&&business&&isPortalHome()){location.replace(appBaseUrl+'?tienda='+encodeURIComponent(business.slug));return}
+ if(isSuper&&isPortalHome())await renderBusinessPortal();
  profileContent.innerHTML=`<div class="profile-head"><div class="profile-avatar">${isSuper?'SA':'AD'}</div><div><span class="admin-badge">${isSuper?'✦ Superadministrador':'Administrador'}</span><h2 class="profile-title">${isSuper?'Panel principal':esc(business?.name||'Mi tienda')}</h2></div></div><div class="status-card"><div class="status-row"><span>Usuario</span><strong>${esc(user.user_metadata?.username||user.email)}</strong></div><div class="status-row"><span>Estado</span><strong class="status-ok">Activo</strong></div><div class="status-row"><span>Tienda</span><strong>${esc(business?.name||(isSuper?'Todas las páginas':'Sin asignar'))}</strong></div></div>${business?`<button class="btn btn-wine" style="width:100%;margin-bottom:9px" onclick="openAdminDashboard()">⚙ Administrar esta tienda</button><button class="btn btn-outline" style="width:100%;margin-bottom:9px" onclick="openPublicStore()">Ver tienda pública</button>`:''}${isSuper?'<button class="btn btn-wine" style="width:100%;margin-bottom:9px" onclick="managedBusiness=null;openAdminDashboard(\'profiles\')">＋ Crear y administrar páginas</button>':''}<button class="btn btn-outline" style="width:100%" id="logoutButton">Cerrar sesión</button>`;document.querySelector('#logoutButton').onclick=logoutProfile;
 };
 

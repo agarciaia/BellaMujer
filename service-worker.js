@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bellamujer-v7-portal';
+const CACHE_NAME = 'bellamujer-v8-private-portal';
 const APP_SHELL = [
   './',
   './index.html',
