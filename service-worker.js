@@ -1,10 +1,11 @@
-const CACHE_NAME = 'bellamujer-v6-catalog';
+const CACHE_NAME = 'bellamujer-v7-portal';
 const APP_SHELL = [
   './',
   './index.html',
   './admin.js',
   './ux.js',
   './catalog.js',
+  './v7.js',
   './manifest.json',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.svg',

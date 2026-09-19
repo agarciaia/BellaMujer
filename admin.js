@@ -225,7 +225,7 @@ orderWhatsapp=function(){
   window.open('https://wa.me/'+number+'?text='+encodeURIComponent(text),'_blank');
 };
 
-window.addEventListener('load',loadStore);
+window.addEventListener('load',()=>loadStore());
 
 async function manageBusiness(id){
   const {data,error}=await supabaseClient.from('businesses').select('*').eq('id',id).single();
