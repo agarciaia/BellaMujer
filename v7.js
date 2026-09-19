@@ -20,7 +20,7 @@ function isPortalHome(){return !new URLSearchParams(location.search).get('tienda
 function iconForCategory(name,stored=''){
  const legacy=['◇','◒','♢','♚','◉','✧','✦'];if(stored&&!legacy.includes(stored))return stored;
  const value=String(name||'').toLowerCase();
- if(value.includes('falda'))return '👗';if(value.includes('blusa')||value.includes('polera'))return '👚';if(value.includes('vestido'))return '👗';if(value.includes('cintur'))return '👜';if(value.includes('iglesia'))return '✨';if(value.includes('chaqueta')||value.includes('abrigo'))return '🧥';if(value.includes('zapato')||value.includes('calzado'))return '👠';if(value.includes('accesor'))return '👜';return '✦';
+ if(value.includes('falda'))return '👗';if(value.includes('blusa')||value.includes('polera'))return '👚';if(value.includes('vestido'))return '👗';if(value.includes('cintur'))return '👜';if(value.includes('iglesia'))return '✨';if(value.includes('chaqueta')||value.includes('abrigo'))return '🧥';if(value.includes('zapato')||value.includes('calzado'))return '👠';if(value.includes('pañuelo'))return '🧣';if(value.includes('billetera'))return '👛';if(value.includes('cartera')||value.includes('bolso')||value.includes('accesor'))return '👜';return '✦';
 }
 
 async function renderBusinessPortal(){
