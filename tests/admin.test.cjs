@@ -1,12 +1,13 @@
 const {JSDOM}=require(process.env.JSDOM_PATH||'jsdom'),fs=require('fs'),assert=require('node:assert/strict');
 const root=require('path').resolve(__dirname,'..')+'/';
 let html=fs.readFileSync(root+'index.html','utf8');for(const file of ['admin.js','ux.js','catalog.js','v7.js'])html=html.replace(`<script src="${file}"></script>`,()=>'<script>'+fs.readFileSync(root+file,'utf8')+'</script>');
-const biz={id:'11111111-1111-4111-8111-111111111111',slug:'bellamujer',name:'BellaMujer',primary_color:'#772640',published:true};
+const biz={id:'11111111-1111-4111-8111-111111111111',slug:'bellamujer',name:'BellaMujer',primary_color:'#772640',published:true,whatsapp:'56911111111',instagram:'https://instagram.com/bellamujer',tiktok:'https://tiktok.com/@bellamujer',customization:{phone:'+56911111111',maps:'https://maps.google.com'}};
 let rows=[],updated,inserts=[];
 const api={from(table){const q={select(){return q},eq(){return q},order(){return q},maybeSingle:async()=>({data:biz}),single:async()=>({data:biz}),insert(p){inserts.push({table,p});return q},update(p){updated=p;Object.assign(biz,p);return q},then(fn){return Promise.resolve({data:table==='products'?rows:[],error:null}).then(fn)}};return q},auth:{onAuthStateChange(){},getSession:async()=>({data:{session:null}})}};
 const dom=new JSDOM(html,{url:'https://example.test/?tienda=bellamujer',runScripts:'dangerously',beforeParse(w){w.supabase={createClient:()=>api};w.HTMLElement.prototype.scrollIntoView=()=>{};w.HTMLElement.prototype.scrollTo=()=>{};w.scrollTo=()=>{};w.URL.createObjectURL=()=>'';}});
 (async()=>{const w=dom.window;await new Promise(r=>w.addEventListener('load',r));await new Promise(r=>setTimeout(r,20));
 assert.equal(w.document.querySelectorAll('#grid article').length,0,'empty db must not show sample products');
+const contacts=[...w.document.querySelectorAll('.contact-button')];assert.equal(contacts.length,5,'all configured contacts render');assert.ok(contacts.every(x=>x.querySelector('svg')),'every contact has an icon');assert.ok(contacts.some(x=>x.dataset.contact==='whatsapp'));assert.ok(contacts.some(x=>x.dataset.contact==='instagram'));assert.ok(contacts.some(x=>x.dataset.contact==='tiktok'));assert.match(w.document.head.textContent,/flex-wrap:wrap;justify-content:center/,'contacts wrap and stay centered');assert.match(w.document.head.textContent,/data-contact=whatsapp.*#25d366/,'WhatsApp uses green styling');
 await w.accountView({id:'253c6a3c-f4b9-4be6-95f2-0c081789bf04',email:'owner@example.test',app_metadata:{}});
 assert.match(w.document.querySelector('#profileContent').textContent,/Administrar esta tienda/,'panel override survives script ordering');
 await w.openAdminDashboard();assert.ok(w.document.querySelector('#settingsForm'));assert.ok(w.document.querySelector('#createProfileForm'));assert.ok(w.document.querySelector('[data-tab=categories]'),'categories tab');
