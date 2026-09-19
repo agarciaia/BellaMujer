@@ -9,7 +9,20 @@ Deno.serve(async req=>{
  const admin=createClient(url,secrets.default??Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")??"",{auth:{persistSession:false}});
  const token=(req.headers.get("Authorization")??"").replace(/^Bearer\s+/i,"");
  const {data:{user}}=await admin.auth.getUser(token);if(user?.id!==OWNER)return reply({error:"Solo el superadministrador puede administrar accesos."},403);
- const body=await req.json().catch(()=>({}));const userId=String(body.userId??"");if(!/^[0-9a-f-]{36}$/i.test(userId))return reply({error:"Usuario inválido"},400);
+ const body=await req.json().catch(()=>({}));
+ if(body.action==="delete_business"){
+  const businessId=String(body.businessId??"");if(!/^[0-9a-f-]{36}$/i.test(businessId))return reply({error:"Página inválida"},400);
+  const {data:business,error:businessError}=await admin.from("businesses").select("id,name").eq("id",businessId).maybeSingle();
+  if(businessError||!business)return reply({error:"La página no existe."},404);
+  const {data:members,error:membersError}=await admin.from("business_members").select("user_id").eq("business_id",businessId);
+  if(membersError)return reply({error:membersError.message},400);
+  const {data:objects}=await admin.storage.from("product-images").list(businessId,{limit:1000});
+  const paths=(objects??[]).map(item=>`${businessId}/${item.name}`);if(paths.length)await admin.storage.from("product-images").remove(paths);
+  const {error:deleteError}=await admin.from("businesses").delete().eq("id",businessId);if(deleteError)return reply({error:deleteError.message},400);
+  for(const member of members??[]){if(member.user_id!==OWNER)await admin.auth.admin.deleteUser(member.user_id)}
+  return reply({ok:true,deleted:{id:business.id,name:business.name}});
+ }
+ const userId=String(body.userId??"");if(!/^[0-9a-f-]{36}$/i.test(userId))return reply({error:"Usuario inválido"},400);
  if(body.action==="password"){
   const password=String(body.password??"");if(password.length<6)return reply({error:"La contraseña debe tener al menos 6 caracteres."},400);
   const {error}=await admin.auth.admin.updateUserById(userId,{password});return error?reply({error:error.message},400):reply({ok:true});
