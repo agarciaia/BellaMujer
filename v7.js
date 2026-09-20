@@ -19,7 +19,7 @@ body.portal-mode{background:#f7f7f8;color:#25242a}body.portal-mode .topbar{backg
 document.head.appendChild(v7Style);
 
 function isPortalHome(){return !new URLSearchParams(location.search).get('tienda')}
-function setThemeColor(color){const safe=/^#[0-9a-f]{6}$/i.test(color||'')?color:'#24232a';let meta=document.querySelector('meta[name="theme-color"]');if(!meta){meta=document.createElement('meta');meta.name='theme-color';document.head.append(meta)}meta.content=safe;document.documentElement.style.setProperty('--system-bar-color',safe)}
+function setThemeColor(){const safe='#111111';let meta=document.querySelector('meta[name="theme-color"]');if(!meta){meta=document.createElement('meta');meta.name='theme-color';document.head.append(meta)}meta.content=safe;document.documentElement.style.setProperty('--system-bar-color',safe)}
 function arrangeBrandHeader(){const topbar=document.querySelector('.topbar'),identity=topbar?.firstElementChild,kicker=document.querySelector('.brand-kicker'),brand=document.querySelector('.brand'),logo=document.querySelector('#brandLogo');if(!topbar||!identity||!kicker||!brand)return;identity.classList.add('brand-identity');let copy=identity.querySelector('.brand-copy');if(!copy){copy=document.createElement('div');copy.className='brand-copy';copy.append(kicker,brand);identity.append(copy)}if(logo&&logo.parentElement!==identity)identity.insertBefore(logo,copy)}
 function updateCompactHeader(){document.querySelector('.topbar')?.classList.toggle('is-compact',window.scrollY>64)}
 window.addEventListener('scroll',updateCompactHeader,{passive:true});
