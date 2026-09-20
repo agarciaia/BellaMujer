@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bellamujer-v10-product-variants';
+const CACHE_NAME = 'bellamujer-v11-theme-and-catalog';
 const APP_SHELL = [
   './',
   './index.html',
@@ -6,6 +6,7 @@ const APP_SHELL = [
   './ux.js',
   './catalog.js',
   './v7.js',
+  './enhancements.js',
   './manifest.json',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.svg',
