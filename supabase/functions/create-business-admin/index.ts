@@ -12,6 +12,35 @@ const cors = {
 const reply = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: cors });
 
+const neutralContent = {
+  kicker: "Tienda online",
+  hero_title: "Descubre nuestra colección",
+  hero_description: "Explora nuestros productos y encuentra tus favoritos.",
+  hero_badge: "Novedades",
+  hero_button: "Ver productos",
+  catalog_title: "Todos los productos",
+  about: "",
+  hours: "",
+  delivery: "",
+  email: "",
+  phone: "",
+  facebook: "",
+  maps: "",
+  website: "",
+  show_promos: true,
+  promo_titles: ["Compra simple", "Nuevos productos", "Guarda favoritos", "Atención directa"],
+  promo_details: ["Elige tus productos con facilidad.", "Revisa las últimas novedades.", "Conserva tus preferidos.", "Contacta directamente a la tienda."],
+};
+
+const styleTemplates: Record<string, { primary_color: string; customization: Record<string, unknown> }> = {
+  neutral: { primary_color: "#24262b", customization: { accent: "#8b8e96", background: "#f6f6f4", text: "#24262b", hero_color: "#34363b", font: "modern", body_font: "modern" } },
+  dark: { primary_color: "#111216", customization: { accent: "#d2ab3d", background: "#0d0e11", text: "#f3f1eb", hero_color: "#17191e", font: "modern", body_font: "modern" } },
+  navy: { primary_color: "#14263d", customization: { accent: "#b6985a", background: "#f4f2ed", text: "#182333", hero_color: "#14263d", font: "editorial", body_font: "modern" } },
+  olive: { primary_color: "#596140", customization: { accent: "#b19a68", background: "#f3f0e7", text: "#303327", hero_color: "#50583a", font: "classic", body_font: "modern" } },
+  beige: { primary_color: "#6c5745", customization: { accent: "#b89570", background: "#f7f1e8", text: "#322c28", hero_color: "#806b57", font: "editorial", body_font: "modern" } },
+  terracotta: { primary_color: "#9a503e", customization: { accent: "#d4a068", background: "#fbf2ea", text: "#402b25", hero_color: "#8b4638", font: "rounded", body_font: "modern" } },
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return reply({ error: "Método no permitido" }, 405);
@@ -35,6 +64,8 @@ Deno.serve(async (req) => {
   const businessName = String(payload.businessName ?? "").trim();
   const username = String(payload.username ?? "").trim().toLowerCase();
   const password = String(payload.password ?? "");
+  const templateKey = String(payload.template ?? "neutral");
+  const selectedTemplate = styleTemplates[templateKey] ?? styleTemplates.neutral;
   let slug = String(payload.slug ?? "").trim().toLowerCase()
     .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 50);
@@ -55,7 +86,13 @@ Deno.serve(async (req) => {
   }
 
   const { data: business, error: businessError } = await admin.from("businesses")
-    .insert({ name: businessName, slug, created_by: authData.user.id })
+    .insert({
+      name: businessName,
+      slug,
+      created_by: authData.user.id,
+      primary_color: selectedTemplate.primary_color,
+      customization: { ...neutralContent, ...selectedTemplate.customization },
+    })
     .select("id,slug,name").single();
   if (businessError || !business) {
     await admin.auth.admin.deleteUser(created.user.id);
@@ -74,5 +111,5 @@ Deno.serve(async (req) => {
   await admin.auth.admin.updateUserById(created.user.id, {
     app_metadata: { role: "business_admin", business_id: business.id },
   });
-  return reply({ business, user: { id: created.user.id, username } }, 201);
+  return reply({ business, user: { id: created.user.id, username }, template: templateKey in styleTemplates ? templateKey : "neutral" }, 201);
 });

@@ -207,7 +207,7 @@ async function renderProfiles(){
 
 async function createProfile(e){
   e.preventDefault();const f=new FormData(e.target),message=document.querySelector('#profileCreateMessage');
-  const {data,error}=await supabaseClient.functions.invoke('create-business-admin',{body:{businessName:f.get('businessName'),username:f.get('username'),password:f.get('password'),slug:f.get('slug')}});
+  const {data,error}=await supabaseClient.functions.invoke('create-business-admin',{body:{businessName:f.get('businessName'),username:f.get('username'),password:f.get('password'),slug:f.get('slug'),template:f.get('template')||'neutral'}});
   if(error||data?.error){let detail=data?.error;try{if(!detail&&error?.context)detail=(await error.context.json()).error}catch{}message.textContent=detail||error.message;return}
   const link=appBaseUrl+'?tienda='+data.business.slug;
   const credentials='Negocio: '+data.business.name+'\nEnlace: '+link+'\nUsuario: '+data.user.username+'\nContraseña: '+String(f.get('password'))+'\nIngresa en Perfil para administrar tu tienda.';

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tienda-ag-v15-neutral-superadmin';
+const CACHE_NAME = 'tienda-ag-v16-store-templates';
 const APP_SHELL = [
   './',
   './index.html',
