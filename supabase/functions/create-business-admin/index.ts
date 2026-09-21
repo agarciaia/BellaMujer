@@ -13,12 +13,12 @@ const reply = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: cors });
 
 const neutralContent = {
-  kicker: "Tienda online",
-  hero_title: "Descubre nuestra colección",
-  hero_description: "Explora nuestros productos y encuentra tus favoritos.",
-  hero_badge: "Novedades",
-  hero_button: "Ver productos",
-  catalog_title: "Todos los productos",
+  kicker: "",
+  hero_title: "",
+  hero_description: "",
+  hero_badge: "",
+  hero_button: "",
+  catalog_title: "",
   about: "",
   hours: "",
   delivery: "",
@@ -27,9 +27,9 @@ const neutralContent = {
   facebook: "",
   maps: "",
   website: "",
-  show_promos: true,
-  promo_titles: ["Compra simple", "Nuevos productos", "Guarda favoritos", "Atención directa"],
-  promo_details: ["Elige tus productos con facilidad.", "Revisa las últimas novedades.", "Conserva tus preferidos.", "Contacta directamente a la tienda."],
+  show_promos: false,
+  promo_titles: ["", "", "", ""],
+  promo_details: ["", "", "", ""],
 };
 
 const styleTemplates: Record<string, { primary_color: string; customization: Record<string, unknown> }> = {
