@@ -11,9 +11,10 @@ export default function handler(request,response){
     id:startUrl,start_url:startUrl,scope:'/',display:'standalone',
     background_color:'#0b0b0c',theme_color:'#111111',
     orientation:'portrait-primary',lang:'es-CL',categories:['shopping','lifestyle'],
+    prefer_related_applications:false,
     icons:[
-      {src:'/assets/icons/icon-192.png',sizes:'192x192',type:'image/png',purpose:'any maskable'},
-      {src:'/assets/icons/icon-512.svg',sizes:'any',type:'image/svg+xml',purpose:'any maskable'}
+      {src:'/assets/icons/icon-192.png?v=20260921-2',sizes:'192x192',type:'image/png',purpose:'any maskable'},
+      {src:'/assets/icons/icon-512.svg?v=20260921-2',sizes:'any',type:'image/svg+xml',purpose:'any maskable'}
     ]
   });
 }

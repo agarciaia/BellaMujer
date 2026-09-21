@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tienda-ag-v14-secure-storefront';
+const CACHE_NAME = 'tienda-ag-v15-neutral-superadmin';
 const APP_SHELL = [
   './',
   './index.html',
@@ -10,9 +10,9 @@ const APP_SHELL = [
   './enhancements.js',
   './platform.js',
   './manifest.json',
-  './assets/icons/icon-192.png',
-  './assets/icons/icon-512.svg',
-  './assets/icons/apple-touch-icon.png',
+  './assets/icons/icon-192.png?v=20260921-2',
+  './assets/icons/icon-512.svg?v=20260921-2',
+  './assets/icons/apple-touch-icon.png?v=20260921-2',
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'
 ];
