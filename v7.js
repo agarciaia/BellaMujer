@@ -29,8 +29,8 @@ async function authenticatedUser(){
  const {data}=await supabaseClient.auth.getSession();return data?.session?.user||null;
 }
 function portalShell(inner){
- document.body.classList.add('portal-mode');activeBusiness=null;document.title='Acceso a tiendas';setThemeColor('#24232a');
- document.querySelector('.brand-kicker').textContent='Administración privada';document.querySelector('.brand').textContent='Portal de tiendas';
+ document.body.classList.add('portal-mode');activeBusiness=null;document.title='Tienda AG — Acceso';setThemeColor('#24232a');
+ document.querySelector('.brand-kicker').textContent='Administración privada';document.querySelector('.brand').textContent='Tienda AG';
  let portal=document.querySelector('#portalHome');if(!portal){portal=document.createElement('section');portal.id='portalHome';portal.className='portal-home';document.querySelector('main').appendChild(portal)}
  portal.innerHTML=inner;finishAppLoading();return portal;
 }
@@ -66,7 +66,7 @@ async function renderBusinessPortal(){
   if(business){location.replace(appBaseUrl+'?tienda='+encodeURIComponent(business.slug));return}
   portal.innerHTML='<div class="portal-intro"><span class="portal-mark">!</span><p class="eyebrow">Cuenta sin tienda</p><h2>No tienes una página asignada</h2><p>Solicita al superadministrador que revise el acceso de tu perfil.</p></div>';return;
  }
- document.title='Directorio privado — Superadministración';document.querySelector('.brand-kicker').textContent='Superadministración';document.querySelector('.brand').textContent='Todas las tiendas';
+ document.title='Tienda AG — Superadministración';document.querySelector('.brand-kicker').textContent='Superadministración';document.querySelector('.brand').textContent='Todas las tiendas';
  const {data,error}=await supabaseClient.from('businesses').select('*').order('created_at',{ascending:true});
  if(error){portal.innerHTML+='<div class="portal-empty">No fue posible cargar las tiendas. Intenta nuevamente.</div>';return}
  const rows=data||[];
