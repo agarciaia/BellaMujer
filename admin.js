@@ -43,7 +43,8 @@ function applyBusiness(business){
 }
 
 async function loadStore(){
-  const slug=new URLSearchParams(location.search).get('tienda')||'bellamujer';
+  const slug=new URLSearchParams(location.search).get('tienda');
+  if(!slug){activeBusiness=null;return}
   const business=await fetchBusiness(slug);
   if(!business){activeBusiness=null;products.splice(0);cats.splice(0,cats.length,'Todas');renderCats();render();document.querySelector('#count').textContent='Tienda no disponible';return}
   applyBusiness(business);
@@ -63,9 +64,10 @@ async function loadStore(){
 }
 
 async function resolveBusinessForUser(user){
-  if(user.id===SUPERADMIN_USER_ID){
+  if(user.id===SUPERADMIN_USER_ID||user.app_metadata?.role==='superadmin'){
     window.accessExpired=false;
-    return await fetchBusiness('bellamujer');
+    const selectedSlug=new URLSearchParams(location.search).get('tienda');
+    return selectedSlug?await fetchBusiness(selectedSlug):(activeBusiness||null);
   }
   const {data:membership}=await supabaseClient.from('business_members').select('business_id,trial_ends_at').eq('user_id',user.id).eq('active',true).maybeSingle();
   const businessId=membership?.business_id;
@@ -78,10 +80,11 @@ async function resolveBusinessForUser(user){
 accountView=async function(user){
   activeUser=user;
   const isSuperAdmin=user.id===SUPERADMIN_USER_ID||user.app_metadata?.role==='superadmin';
+  const displayUser=isSuperAdmin?'superadmin':(user.user_metadata?.username||String(user.email||'').split('@')[0]||'administrador');
   const business=await resolveBusinessForUser(user);
   managedBusiness=business;
   profileContent.innerHTML=`<div class="profile-head"><div class="profile-avatar">${isSuperAdmin?'SA':'AD'}</div><div><span class="admin-badge">${isSuperAdmin?'✦ Superadministrador':'Administrador'}</span><h2 class="profile-title">${isSuperAdmin?'Panel principal':esc(business?.name||'Mi tienda')}</h2></div></div>
-  <div class="status-card"><div class="status-row"><span>Usuario</span><strong>${esc(user.user_metadata?.username||user.email)}</strong></div><div class="status-row"><span>Estado</span><strong class="status-ok">Activo</strong></div><div class="status-row"><span>Tienda</span><strong>${esc(business?.name||'Sin asignar')}</strong></div></div>
+  <div class="status-card"><div class="status-row"><span>Usuario</span><strong>${esc(displayUser)}</strong></div><div class="status-row"><span>Estado</span><strong class="status-ok">Activo</strong></div><div class="status-row"><span>Tienda</span><strong>${esc(business?.name||'Sin tienda seleccionada')}</strong></div></div>
   ${business?`<button class="btn btn-wine" style="width:100%;margin-bottom:9px" onclick="openAdminDashboard()">⚙ Administrar tienda</button><button class="btn btn-outline" style="width:100%;margin-bottom:9px" onclick="openPublicStore()">Ver tienda pública</button>`:''}
   ${isSuperAdmin?'<button class="btn btn-outline" style="width:100%;margin-bottom:9px" onclick="openAdminDashboard(\'profiles\')">＋ Crear y administrar perfiles</button>':''}
   <button class="btn btn-outline" style="width:100%" id="logoutButton">Cerrar sesión</button>`;
@@ -94,12 +97,13 @@ function openPublicStore(){
 
 async function openAdminDashboard(tabName='settings'){
   closeModal('profileModal');adminModal.classList.add('show');
-  adminContent.innerHTML='<div class="empty">Cargando administración...</div>';
-  const isSuper=activeUser?.id===SUPERADMIN_USER_ID;
+  adminContent.innerHTML='<div class="empty">Cargando, ajustando perfil…</div>';
+  const isSuper=activeUser?.id===SUPERADMIN_USER_ID||activeUser?.app_metadata?.role==='superadmin';
   const business=managedBusiness||await resolveBusinessForUser(activeUser);
   managedBusiness=business;
   if(!business&&!isSuper){adminContent.innerHTML='<div class="empty">Tu cuenta no tiene una tienda asignada.</div>';return}
-  adminContent.innerHTML=`<p class="eyebrow">Administración</p><h2 class="profile-title">${esc(business?.name||'BellaMujer')}</h2>
+  if(!business&&isSuper){adminContent.innerHTML='<p class="eyebrow">Superadministración</p><h2 class="profile-title">Administración general</h2><div class="admin-tabs"><button class="admin-tab active" data-tab="profiles">Perfiles y tiendas</button></div><section class="admin-panel active" data-panel="profiles"><div class="empty">Cargando tiendas…</div></section>';await renderProfiles();return}
+  adminContent.innerHTML=`<p class="eyebrow">Administración</p><h2 class="profile-title">${esc(business.name)}</h2>
   <div class="admin-tabs"><button class="admin-tab" data-tab="settings">Ajustes</button><button class="admin-tab" data-tab="products">Productos</button><button class="admin-tab" data-tab="share">Link y QR</button>${isSuper?'<button class="admin-tab" data-tab="profiles">Perfiles</button>':''}</div>
   <section class="admin-panel" data-panel="settings"></section><section class="admin-panel" data-panel="products"></section><section class="admin-panel" data-panel="share"></section><section class="admin-panel" data-panel="profiles"></section>`;
   adminContent.querySelectorAll('.admin-tab').forEach(btn=>btn.onclick=()=>showAdminTab(btn.dataset.tab));

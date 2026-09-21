@@ -3,7 +3,8 @@ const originalApplyCatalog=applyBusiness;
 applyBusiness=function(b){originalApplyCatalog(b);document.documentElement.dataset.cardSize=b?.customization?.card_size||'normal'};
 
 loadStore=async function(){
- const slug=new URLSearchParams(location.search).get('tienda')||'bellamujer',business=await fetchBusiness(slug);
+ const slug=new URLSearchParams(location.search).get('tienda');if(!slug)return;
+ const business=await fetchBusiness(slug);
  if(!business){activeBusiness=null;products.splice(0);cats.splice(0,cats.length,'Todas');renderCats();render();count.textContent='Tienda no disponible';return}
  applyBusiness(business);
  const [productResult,categoryResult]=await Promise.all([

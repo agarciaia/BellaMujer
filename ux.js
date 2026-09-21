@@ -95,7 +95,7 @@ openProduct=function(id){
  document.querySelector('#detailAddCart').onclick=addCart;document.querySelector('#detailWhatsapp').onclick=directWhatsapp;document.querySelector('#productModal').classList.add('show');document.querySelector('.pd-scroll').scrollTop=0;
 };
 pick=function(el){el.parentElement.querySelectorAll('.chip').forEach(x=>{x.classList.remove('selected');x.setAttribute('aria-pressed','false')});el.classList.add('selected');el.setAttribute('aria-pressed','true')};
-save=function(){try{const slug=new URLSearchParams(location.search).get('tienda')||'bellamujer';localStorage.setItem('bm_favs_'+slug,JSON.stringify(favs));localStorage.setItem('bm_cart_'+slug,JSON.stringify(cart))}catch(error){console.warn('No se pudo conservar el carrito en este dispositivo',error)}counts()};
+save=function(){try{const slug=new URLSearchParams(location.search).get('tienda')||'portal';localStorage.setItem('bm_favs_'+slug,JSON.stringify(favs));localStorage.setItem('bm_cart_'+slug,JSON.stringify(cart))}catch(error){console.warn('No se pudo conservar el carrito en este dispositivo',error)}counts()};
 addCart=function(){
  if(!current){toast('Selecciona un producto');return}
  const detail=document.querySelector('#productDetail');

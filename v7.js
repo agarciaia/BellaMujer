@@ -1,4 +1,4 @@
-/* BellaMujer v7: portal, product availability, three-photo gallery and page management. */
+/* Store platform: portal, product availability, three-photo gallery and page management. */
 const v7ApplyBusiness=applyBusiness;
 const v7RenderSettings=renderSettings;
 
@@ -32,7 +32,7 @@ function portalShell(inner){
  document.body.classList.add('portal-mode');activeBusiness=null;document.title='Acceso a tiendas';setThemeColor('#24232a');
  document.querySelector('.brand-kicker').textContent='Administración privada';document.querySelector('.brand').textContent='Portal de tiendas';
  let portal=document.querySelector('#portalHome');if(!portal){portal=document.createElement('section');portal.id='portalHome';portal.className='portal-home';document.querySelector('main').appendChild(portal)}
- portal.innerHTML=inner;return portal;
+ portal.innerHTML=inner;finishAppLoading();return portal;
 }
 function iconForCategory(name,stored=''){
  const legacy=['◇','◒','♢','♚','◉','✧','✦'];if(stored&&!legacy.includes(stored))return stored;
@@ -74,12 +74,13 @@ async function renderBusinessPortal(){
 }
 
 loadStore=async function(){
+ showAppLoading('Cargando, ajustando perfil…');
  if(isPortalHome()){await renderBusinessPortal();return}
  document.body.classList.remove('portal-mode');document.querySelector('#portalHome')?.remove();
  const slug=new URLSearchParams(location.search).get('tienda'),user=authReady()?await authenticatedUser():null;
  if(user&&!isSuperUser(user)){const assigned=await resolveBusinessForUser(user);if(assigned&&assigned.slug!==slug){location.replace(appBaseUrl+'?tienda='+encodeURIComponent(assigned.slug));return}}
  const business=await fetchBusiness(slug);
- if(!business){activeBusiness=null;products.splice(0);cats.splice(0,cats.length,'Todas');renderCats();render();count.textContent='Tienda no disponible';return}
+ if(!business){activeBusiness=null;products.splice(0);cats.splice(0,cats.length,'Todas');renderCats();render();document.querySelector('.brand-kicker').textContent='Enlace no disponible';document.querySelector('.brand').textContent='Tienda no disponible';document.querySelector('.hero-pill').textContent='Sin perfil asociado';document.querySelector('.hero h2').textContent='No encontramos esta tienda';document.querySelector('.hero p').textContent='Revisa el enlace o solicita al administrador el acceso correcto.';count.textContent='Tienda no disponible';finishAppLoading();return}
  applyBusiness(business);
  const [productResult,categoryResult]=await Promise.all([
   supabaseClient.from('products').select('*').eq('business_id',business.id).eq('active',true).order('sort_order').order('created_at',{ascending:false}),
@@ -99,7 +100,7 @@ applyBusiness=function(b){
  const info=document.querySelector('#storeLinks'),links=info?.querySelector('.brand-contact');actions.replaceChildren();
  if(links){links.className='store-action-row';links.querySelectorAll('a').forEach(link=>{const label=link.textContent.trim();link.className='btn contact-button';link.dataset.contact=label.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,'-');link.setAttribute('aria-label',label);link.innerHTML=`<span class="contact-icon" aria-hidden="true">${contactIcon(label)}</span><span>${esc(label)}</span>`});actions.append(links)}
  actions.hidden=!actions.querySelector('a');
- if(info)info.hidden=!info.children.length;
+ if(info)info.hidden=!info.children.length;finishAppLoading();
 };
 
 function contactIcon(label){

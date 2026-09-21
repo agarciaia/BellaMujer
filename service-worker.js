@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bellamujer-v12-neutral-system-bar';
+const CACHE_NAME = 'store-platform-v13-clean-loading';
 const APP_SHELL = [
   './',
   './index.html',
