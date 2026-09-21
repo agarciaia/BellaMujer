@@ -1,6 +1,6 @@
-# BellaMujer
+# Tienda AG
 
-PWA BellaMujer construida a partir de `BellaMujer_PREVIEW_LOCAL.html`, manteniendo la interfaz y las funciones comerciales existentes.
+Plataforma PWA multitienda para catálogos digitales y ventas por WhatsApp.
 
 ## Publicación
 
@@ -35,8 +35,8 @@ Las seis prendas originales se conservaron en Supabase como catálogo editable. 
 Sitio estático sin compilación. `node --check admin.js` valida sintaxis. Para las pruebas DOM:
 
 ```sh
-npm install --prefix /tmp/bellamujer-tests jsdom
-JSDOM_PATH=/tmp/bellamujer-tests/node_modules/jsdom node tests/admin.test.cjs
+npm install --prefix /tmp/tienda-ag-tests jsdom
+JSDOM_PATH=/tmp/tienda-ag-tests/node_modules/jsdom node tests/admin.test.cjs
 ```
 
 Las pruebas cubren carga del panel, catálogo vacío, acciones UUID, escape de contenido y carrito por tienda. Las políticas se probaron con transacciones revertidas en Supabase. El propietario autorizó y superó la prueba de inicio de sesión.

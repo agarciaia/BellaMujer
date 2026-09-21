@@ -1,8 +1,9 @@
 import { createClient } from "npm:@supabase/supabase-js@2.57.4";
 
 const SUPERADMIN_ID = "253c6a3c-f4b9-4be6-95f2-0c081789bf04";
+const APP_ORIGIN = "https://bellamujer.vercel.app";
 const cors = {
-  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Origin": APP_ORIGIN,
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Content-Type": "application/json",
@@ -24,7 +25,8 @@ Deno.serve(async (req) => {
 
   const token = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
   const { data: authData, error: authError } = await admin.auth.getUser(token);
-  if (authError || authData.user?.id !== SUPERADMIN_ID) {
+  const isSuperAdmin=authData.user?.id===SUPERADMIN_ID||authData.user?.app_metadata?.role==="superadmin";
+  if (authError || !isSuperAdmin) {
     return reply({ error: "Solo el superadministrador puede crear perfiles." }, 403);
   }
 
@@ -37,11 +39,11 @@ Deno.serve(async (req) => {
     .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 50);
 
-  if (businessName.length < 2 || !/^[a-z0-9._-]{3,30}$/.test(username) || password.length < 6) {
-    return reply({ error: "Completa nombre, usuario válido y contraseña de al menos 6 caracteres." }, 400);
+  if (businessName.length < 2 || !/^[a-z0-9._-]{3,30}$/.test(username) || password.length < 12 || !/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/\d/.test(password)) {
+    return reply({ error: "Usa un nombre y usuario válidos, y una contraseña de 12 caracteres con mayúscula, minúscula y número." }, 400);
   }
   if (slug.length < 3) slug = username.replace(/[._]/g, "-");
-  const email = `${username}@usuarios.bellamujer.invalid`;
+  const email = `${username}@usuarios.tienda-ag.invalid`;
 
   const { data: created, error: createError } = await admin.auth.admin.createUser({
     email, password, email_confirm: true,

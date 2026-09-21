@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title description">
+  <title id="title">Tienda AG</title>
+  <desc id="description">Monograma AG amarillo sobre una bolsa negra</desc>
+  <rect width="512" height="512" rx="116" fill="#0b0b0c"/>
+  <path d="M154 194h204l24 226H130l24-226Z" fill="#171719" stroke="#f7c600" stroke-width="18" stroke-linejoin="round"/>
+  <path d="M202 210v-34c0-46 26-78 54-78s54 32 54 78v34" fill="none" stroke="#f7c600" stroke-width="18" stroke-linecap="round"/>
+  <path d="M174 356 231 239h21l56 117h-34l-12-27h-43l-12 27h-33Zm56-54h21l-10-25-11 25Z" fill="#f7c600"/>
+  <path d="M340 267c-10-7-20-10-31-10-22 0-37 15-37 41 0 25 15 40 37 40 6 0 11-1 16-4v-20h-24v-25h54v62c-14 9-30 13-49 13-41 0-69-27-69-66 0-40 29-67 72-67 18 0 34 4 47 12l-16 24Z" fill="#fff"/>
+</svg>

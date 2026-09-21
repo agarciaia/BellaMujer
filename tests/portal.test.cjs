@@ -1,7 +1,7 @@
 const {JSDOM}=require(process.env.JSDOM_PATH||'jsdom'),fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'..')+'/';
 let html=fs.readFileSync(root+'index.html','utf8');
-for(const file of ['admin.js','ux.js','catalog.js','v7.js','enhancements.js'])html=html.replace(`<script src="${file}"></script>`,()=>'<script>'+fs.readFileSync(root+file,'utf8')+'</script>');
+for(const file of ['config.js','admin.js','ux.js','catalog.js','v7.js','enhancements.js','platform.js'])html=html.replace(`<script src="${file}"></script>`,()=>'<script>'+fs.readFileSync(root+file,'utf8')+'</script>');
 const businesses=[{id:'22222222-2222-4222-8222-222222222222',slug:'moda-cristiana',name:'Elegancia Cristiana',published:true,logo_url:'',hero_image_url:'',created_at:'2026-01-02'}];
 function makeApi(user=null){return {from(table){const q={select(){return q},eq(){return q},order(){return q},maybeSingle:async()=>({data:null}),then(fn){return Promise.resolve({data:table==='businesses'?businesses:[],error:null}).then(fn)}};return q},auth:{onAuthStateChange(){},getUser:async()=>({data:{user},error:null}),getSession:async()=>({data:{session:user?{user}:null}})}}}
 async function page(user=null){const dom=new JSDOM(html,{url:'https://example.test/',runScripts:'dangerously',beforeParse(w){w.supabase={createClient:()=>makeApi(user)};w.HTMLElement.prototype.scrollIntoView=()=>{};w.scrollTo=()=>{};}});await new Promise(r=>dom.window.addEventListener('load',r));await new Promise(r=>setTimeout(r,35));return dom}

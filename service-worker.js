@@ -1,16 +1,20 @@
-const CACHE_NAME = 'store-platform-v13-clean-loading';
+const CACHE_NAME = 'tienda-ag-v14-secure-storefront';
 const APP_SHELL = [
   './',
   './index.html',
+  './config.js',
   './admin.js',
   './ux.js',
   './catalog.js',
   './v7.js',
   './enhancements.js',
+  './platform.js',
   './manifest.json',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.svg',
-  './assets/icons/apple-touch-icon.png'
+  './assets/icons/apple-touch-icon.png',
+  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'
 ];
 
 self.addEventListener('install', event => {
@@ -28,7 +32,8 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   const requestUrl = new URL(event.request.url);
-  if (requestUrl.origin !== self.location.origin) return;
+  const trustedDependency=requestUrl.href==='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js'||requestUrl.href==='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+  if (requestUrl.origin !== self.location.origin&&!trustedDependency) return;
   event.respondWith(
     fetch(event.request)
       .then(response => {
