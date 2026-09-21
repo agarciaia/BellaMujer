@@ -13,12 +13,12 @@ const reply = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: cors });
 
 const neutralContent = {
-  kicker: "",
+  kicker: "Aquí coloca una frase breve sobre tu negocio",
   hero_title: "",
-  hero_description: "",
-  hero_badge: "",
-  hero_button: "",
-  catalog_title: "",
+  hero_description: "Aquí cuenta qué vendes y qué hace especial a tu tienda.",
+  hero_badge: "Aquí destaca una novedad",
+  hero_button: "Ver productos",
+  catalog_title: "Nuestros productos",
   about: "",
   hours: "",
   delivery: "",
@@ -27,9 +27,9 @@ const neutralContent = {
   facebook: "",
   maps: "",
   website: "",
-  show_promos: false,
-  promo_titles: ["", "", "", ""],
-  promo_details: ["", "", "", ""],
+  show_promos: true,
+  promo_titles: ["Aquí destaca un beneficio", "Aquí anuncia una novedad", "Aquí inspira a tus clientes", "Aquí explica cómo comprar"],
+  promo_details: ["Ejemplo: despacho, retiro o pago fácil.", "Ejemplo: nuevos productos cada semana.", "Comparte una idea que represente tu marca.", "Explica brevemente cómo hacer un pedido."],
 };
 
 const styleTemplates: Record<string, { primary_color: string; customization: Record<string, unknown> }> = {
@@ -91,7 +91,7 @@ Deno.serve(async (req) => {
       slug,
       created_by: authData.user.id,
       primary_color: selectedTemplate.primary_color,
-      customization: { ...neutralContent, ...selectedTemplate.customization },
+      customization: { ...neutralContent, ...selectedTemplate.customization, hero_title: businessName },
     })
     .select("id,slug,name").single();
   if (businessError || !business) {
