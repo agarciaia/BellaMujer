@@ -4,5 +4,5 @@ window.TIENDA_AG_CONFIG=Object.freeze({
   userEmailDomain:'usuarios.tienda-ag.invalid',
   legacyUserEmailDomain:'usuarios.bellamujer.invalid',
   storagePrefix:'tienda_ag',
-  cacheVersion:'v4-compact-product-cards'
+  cacheVersion:'v5-tienda-ag-domain'
 });

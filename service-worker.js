@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tienda-ag-v19-compact-product-cards';
+const CACHE_NAME = 'tienda-ag-v20-domain-transition';
 const APP_SHELL = [
   './',
   './index.html',

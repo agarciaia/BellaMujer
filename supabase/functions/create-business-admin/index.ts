@@ -1,16 +1,19 @@
 import { createClient } from "npm:@supabase/supabase-js@2.57.4";
 
 const SUPERADMIN_ID = "253c6a3c-f4b9-4be6-95f2-0c081789bf04";
-const APP_ORIGIN = "https://bellamujer.vercel.app";
-const cors = {
-  "Access-Control-Allow-Origin": APP_ORIGIN,
+const APP_ORIGINS = new Set([
+  "https://tienda-ag.vercel.app",
+  "https://bellamujer.vercel.app",
+]);
+const corsHeaders = (req: Request) => ({
+  "Access-Control-Allow-Origin": APP_ORIGINS.has(req.headers.get("Origin") ?? "")
+    ? req.headers.get("Origin")!
+    : "https://tienda-ag.vercel.app",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Content-Type": "application/json",
-};
-
-const reply = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), { status, headers: cors });
+  "Vary": "Origin",
+});
 
 const neutralContent = {
   kicker: "Aquí coloca una frase breve sobre tu negocio",
@@ -42,6 +45,9 @@ const styleTemplates: Record<string, { primary_color: string; customization: Rec
 };
 
 Deno.serve(async (req) => {
+  const cors = corsHeaders(req);
+  const reply = (body: unknown, status = 200) =>
+    new Response(JSON.stringify(body), { status, headers: cors });
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return reply({ error: "Método no permitido" }, 405);
 
