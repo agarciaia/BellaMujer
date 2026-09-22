@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tienda-ag-v18-guided-content';
+const CACHE_NAME = 'tienda-ag-v19-compact-product-cards';
 const APP_SHELL = [
   './',
   './index.html',
