@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tienda-ag-v20-domain-transition';
+const CACHE_NAME = 'tienda-ag-v21-customer-menu-profile';
 const APP_SHELL = [
   './',
   './index.html',
@@ -9,6 +9,7 @@ const APP_SHELL = [
   './v7.js',
   './enhancements.js',
   './platform.js',
+  './customer.js',
   './manifest.json',
   './assets/icons/icon-192.png?v=20260921-2',
   './assets/icons/icon-512.svg?v=20260921-2',
