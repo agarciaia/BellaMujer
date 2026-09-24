@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tienda-ag-v22-cart-confirmation';
+const CACHE_NAME = 'tienda-ag-v23-header-action-order';
 const APP_SHELL = [
   './',
   './index.html',
@@ -9,7 +9,7 @@ const APP_SHELL = [
   './v7.js',
   './enhancements.js',
   './platform.js',
-  './customer.js?v=20260924-2',
+  './customer.js?v=20260924-3',
   './manifest.json',
   './assets/icons/icon-192.png?v=20260921-2',
   './assets/icons/icon-512.svg?v=20260921-2',
